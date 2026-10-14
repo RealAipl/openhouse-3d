@@ -61,6 +61,12 @@ jobs:
           print("AUDIT PASS: 4 dwellings, 24 rooms, 2 side stairs, all cameras and all visits.")
           PY
 
+      - name: Download SHA256-verified Poly Haven CC0 textures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/fetch_assets.py houses/blizniak_dwulokalowy/assets/sources.json
+
       - name: Install Blender 5.2.1
         shell: bash
         run: |
