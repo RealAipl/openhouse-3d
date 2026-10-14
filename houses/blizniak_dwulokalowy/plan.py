@@ -84,3 +84,46 @@ def validate_program():
 
 
 validate_program()
+
+
+def room_camera_pose(room):
+    """Room-safe starting point and look-at target, derived from bounds and usage.
+
+    Always stay >= 0.38 m inside the room envelope. This replaces central
+    camera positions that collided with furniture or wall partitions.
+    """
+    x0, x1, y0, y1, z0, z1 = ROOMS[room]
+    meta = ROOM_META[room]
+    w, d = x1-x0, y1-y0
+    cx, cy = (x0+x1)/2, (y0+y1)/2
+    sign = +1 if meta["segment"] == "A" else -1
+
+    if meta["name"] == "salon_z_aneksem":
+        x = x0+0.52 if sign == +1 else x1-0.52
+        p = (x, y0+0.67, z0+1.52)
+        target = (cx+0.15*sign, y1-0.91, z0+1.33)
+        lens = 18
+    elif meta["name"].startswith("pokoj"):
+        x = x0+0.49 if sign == +1 else x1-0.49
+        p = (x,y0+0.56,z0+1.53)
+        target = (cx+0.20*sign, y1-0.62,z0+1.32)
+        lens = 18
+    elif meta["name"] == "lazienka":
+        x = x1-0.41 if sign == +1 else x0+0.41
+        p = (x,y0+0.93,z0+1.54)
+        target = (cx,y1-0.38,z0+1.20)
+        lens = 16
+    elif meta["name"] == "pom_gospodarcze":
+        p=(cx,y0+0.43,z0+1.50)
+        target=(cx,y1-.28,z0+1.25)
+        lens=16
+    else:
+        p=(cx,y0+.43,z0+1.50)
+        target=(cx,y1-.35,z0+1.25)
+        lens=16
+
+    margin=0.35
+    assert (x0+margin <= p[0] <= x1-margin and
+            y0+margin <= p[1] <= y1-margin), (room,p)
+    assert z0+1.4 <= p[2] <= z1-0.9
+    return p,target,lens
