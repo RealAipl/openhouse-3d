@@ -1,0 +1,81 @@
+name: OpenHouse - all four flats film storyboard (CPU)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/render-blizniak-film-preview.yml
+
+permissions:
+  contents: read
+
+jobs:
+  film-preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Python deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -e .
+          echo "ARCHVIZ_PYTHON=$(command -v python)" >> "$GITHUB_ENV"
+      - name: Download Blender 5.2.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --silent --show-error \
+            https://download.blender.org/release/Blender5.2/blender-5.2.1-linux-x64.tar.xz \
+            --output "$RUNNER_TEMP/blender.tar.xz"
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Preview every room and external staircase
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b --python-exit-code 1 \
+            --python run.py -- \
+            --house blizniak_dwulokalowy --device CPU \
+            --film all --film-preview --film-step 8 --no-polish
+      - name: Assemble storyboard film
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b --python-exit-code 1 \
+            --python run.py -- \
+            --house blizniak_dwulokalowy \
+            --film all --film-preview --film-encode \
+            --film-out "$PWD/houses/blizniak_dwulokalowy/output/film/blizniak_storyboard.mp4"
+      - name: Create contact sheet and verify full shot list
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          from houses.blizniak_dwulokalowy.house import SHOTS
+          from archviz import filmkit
+          assert len(SHOTS)==27
+          assert len([s for s in SHOTS if s['name'].startswith('visit_')])==24
+          folder=Path('houses/blizniak_dwulokalowy/output/film')
+          filmkit.configure(str(folder),'preview')
+          for shot in SHOTS:
+              p=Path(filmkit.shot_dir(shot))
+              assert list(p.glob('f_*.png')), 'Missing room shot: '+shot['name']
+          filmkit.contact_sheet(str(folder/'contact_sheet.jpg'),SHOTS,per_shot=2)
+          assert (folder/'contact_sheet.jpg').stat().st_size>10000
+          assert (folder/'blizniak_storyboard.mp4').stat().st_size>30000
+          print('Validated all 27 film shots and 24 room visits')
+          PY
+      - name: Upload MP4 and shot contact sheet
+        uses: actions/upload-artifact@v4
+        with:
+          name: blizniak-all-four-apartments-film-preview
+          path: |
+            houses/blizniak_dwulokalowy/output/film/blizniak_storyboard.mp4
+            houses/blizniak_dwulokalowy/output/film/contact_sheet.jpg
+          retention-days: 3
+          if-no-files-found: error
