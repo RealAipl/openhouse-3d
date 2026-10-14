@@ -1,0 +1,29 @@
+[
+  {
+    "asset": "wood_floor",
+    "map": "Diffuse",
+    "file": "wood_floor_diff_2k.jpg",
+    "source": "https://polyhaven.com/a/wood_floor",
+    "license": "CC0",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/wood_floor/wood_floor_diff_2k.jpg",
+    "sha256": "7c3ff1164c8dd0758ef2c048e9a266d28174120de01052ec40e6ca486177345c"
+  },
+  {
+    "asset": "wood_floor",
+    "map": "Rough",
+    "file": "wood_floor_rough_2k.jpg",
+    "source": "https://polyhaven.com/a/wood_floor",
+    "license": "CC0",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/wood_floor/wood_floor_rough_2k.jpg",
+    "sha256": "297eda0d75f2020cc541dbf242e1f5fd058053249567f49a4506fc2c5b1a172b"
+  },
+  {
+    "asset": "fabric_leather_01",
+    "map": "Rough",
+    "file": "fabric_leather_01_rough_2k.jpg",
+    "source": "https://polyhaven.com/a/fabric_leather_01",
+    "license": "CC0",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/fabric_leather_01/fabric_leather_01_rough_2k.jpg",
+    "sha256": "f3c5d08786ca78b984e4563d92e551b34a1d7f6845b1376da44694039aa62e3b"
+  }
+]
