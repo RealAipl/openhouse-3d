@@ -29,71 +29,103 @@ def _partitions(M):
             z0=LEVEL_Z[level]
             z1=Z_LOWER_CEIL if level=="ground" else Z_UPPER_CEIL
             walls=MB()
-            _local_horizontal(walls,seg,0,7.34,5.27,z0,z1,(2.60,3.51))
-            _local_vertical(walls,seg,2.40,5.27,7.70,z0,z1,(6.15,7.06))
-            _local_vertical(walls,seg,3.75,5.27,9.17,z0,z1,(6.03,6.96))
+            _local_horizontal(walls,seg,0,7.34,4.79,z0,z1,(2.60,3.51))
+            _local_vertical(walls,seg,2.40,4.79,7.25,z0,z1,(6.15,7.06))
+            _local_vertical(walls,seg,3.75,4.79,8.63,z0,z1,(6.03,6.96))
             if level=="ground":
-                _local_vertical(walls,seg,2.50,.27,5.27,z0,z1,(3.51,4.38))
-                _local_horizontal(walls,seg,0,3.75,7.70,z0,z1,(2.56,3.43))
-                _local_vertical(walls,seg,1.60,7.70,9.17,z0,z1,(7.98,8.88))
+                _local_vertical(walls,seg,2.50,.27,4.79,z0,z1,(3.51,4.38))
+                _local_horizontal(walls,seg,0,3.75,7.25,z0,z1,(2.56,3.43))
+                _local_vertical(walls,seg,1.60,7.25,8.63,z0,z1,(7.98,8.88))
             else:
-                _local_horizontal(walls,seg,0,2.40,7.70,z0,z1,(1.10,1.97))
-                _local_vertical(walls,seg,2.40,7.70,9.17,z0,z1,(8.06,8.94))
+                _local_horizontal(walls,seg,0,2.40,7.25,z0,z1,(1.10,1.97))
+                _local_vertical(walls,seg,2.40,7.25,8.63,z0,z1,(8.06,8.94))
             walls.build("BLI_Partitions_" + seg + "_" + level,[M["party"]])
 
 
-def _furnish_room(room,box,M):
-    data=ROOM_META[room]
-    seg,level,no=data["segment"],data["level"],data["no"]
-    kind=data["name"]; x0,x1,y0,y1,z0,z1=box
+def _furnish_room(room, box, M):
+    """Real rounded parametric furniture, sized for the local room program.
+
+    Staging is a visual proposal, not the furnishings of the architect's drawing.
+    """
+    from archviz.parts import sofa, bed, table, dining_chair, round_table
+    from archviz.parts import armchair, basin, faucet, cabinet_run, bathtub
+    data = ROOM_META[room]
+    seg,kind = data["segment"], data["name"]
+    x0,x1,y0,y1,z0,z1=box
+    w,d=x1-x0,y1-y0
     cx,cy=(x0+x1)/2,(y0+y1)/2
-    b=MB()
-    # Slots: upholstery, timber, cabinets, sanitary white, charcoal.
-    if kind=="salon_z_aneksem":
-        # Compact sectional, rug, coffee table and kitchen on the dividing wall.
-        b.rbox(cx-1.25,cx+0.45,cy-1.15,cy-.38,z0+.14,z0+.53,.07,mi=0)
-        b.rbox(cx-1.25,cx+.45,cy-.46,cy-.25,z0+.14,z0+.91,.05,mi=0)
-        b.box(cx-.60,cx+.48,cy+.03,cy+.55,z0+.31,z0+.37,mi=1)
-        b.box(cx-.55,cx+.42,cy+.04,cy+.54,z0+.37,z0+.40,mi=2)
-        b.box(cx-1.45,cx+1.30,cy-1.68,cy+.7,z0+.035,z0+.046,mi=2)
-        # Kitchen countertop and upper storage, along the rear part of the room.
-        b.box(cx-1.95,cx+1.95,y1-.73,y1-.15,z0,z0+.89,mi=2)
-        b.box(cx-1.95,cx+1.95,y1-.74,y1-.11,z0+.89,z0+.935,mi=1)
-        for dx in (-1.5,-.5,.5,1.5):
-            b.box(cx+dx-.30,cx+dx+.30,y1-.72,y1-.12,z0+1.43,z0+2.12,mi=2)
-        # Dining set on the open-plan side, behind the lounge.
-        bx=cx+1.18 if seg=="A" else cx-1.18
-        b.box(bx-.55,bx+.55,cy+.32,cy+1.04,z0+.71,z0+.76,mi=1)
-        for dx in (-.42,.42):
-            for yy in (cy+.14,cy+1.17):
-                b.box(bx+dx-.17,bx+dx+.17,yy-.17,yy+.17,z0+.40,z0+.47,mi=0)
+    furniture=MB()
+    # per-face material slots: upholstery, timber, cabinets, ceramic, graphite, textiles
+    if kind == "salon_z_aneksem":
+        sofa_w=min(2.25,w-1.25)
+        sy = max(y0+1.40,cy-0.38)
+        sofa(furniture,cx-.22,sy,sofa_w,.87,z=z0,mi_seat=0,mi_back=0,
+             mi_base=1,plinth=.08,mi_plinth=1,soft=.075,
+             pillows=2,mi_pillow=5,cushion_gap=.025)
+        round_table(furniture,cx-.18,sy-1.03,z0,.37,h=.39,mi=1,mi_leg=4)
+        furniture.rbox(cx-1.35,cx+1.12,sy-1.63,sy-.20,z0+.035,z0+.056,.010,mi=5)
+        # Kitchen runs along the central twin party wall, as shown in both plans.
+        if seg=="A":
+            k0,k1=x1-.72,x1-.13
+            sink_x=x1-.42
+        else:
+            k0,k1=x0+.13,x0+.72
+            sink_x=x0+.42
+        ky0=y1-2.08;ky1=y1-.20
+        cabinet_run(furniture,k0,k1,ky0,ky1,z0,z0+.87,mi=2,doors="Y",n=4,mi_gap=4)
+        furniture.box(k0-.015,k1+.015,ky0-.015,ky1+.015,z0+.87,z0+.93,mi=3)
+        # Worktop sink / hob are recognisable 3D objects, not blank cubes.
+        furniture.box(sink_x-.23,sink_x+.23,ky1-.53,ky1-.16,z0+.934,z0+.945,mi=4)
+        for yy in (ky0+.30,ky0+.60):
+            furniture.cylinder(sink_x,yy,z0+.94,z0+.944,.105,seg=24,mi=4)
+        # Dining zone, kept inside living footprint and separate from entry.
+        dx=cx+1.02 if seg=="A" else cx-1.02
+        ty=y1-1.22
+        table(furniture,dx,ty,z0,.96,.68,h=.76,mi_top=1,mi_leg=4,leg_w=.055)
+        for offset in (-.65,.65):
+            dining_chair(furniture,dx+offset,ty,rot=(1.57 if offset>0 else -1.57),
+                         z=z0,mi_wood=1,mi_seat=5)
+        # Open shelving and artwork at far corner.
+        furniture.box(x0+.18,x0+.38,y1-1.31,y1-.23,z0+.20,z0+1.75,mi=1)
+        for zz in (.42,.82,1.22,1.62):
+            furniture.box(x0+.12,x0+.47,y1-1.30,y1-.20,z0+zz,z0+zz+.035,mi=1)
     elif kind.startswith("pokoj"):
-        # Double bed plus headboard, pillows, side console, wardrobe.
-        w=min(1.62,x1-x0-.70)
-        l=min(2.04,y1-y0-.55)
-        b.rbox(cx-w/2,cx+w/2,cy-l/2,cy+l/2,z0+.25,z0+.54,.05,mi=0)
-        b.box(cx-w/2-.08,cx+w/2+.08,cy+l/2-.01,cy+l/2+.10,z0,z0+1.02,mi=1)
-        for dd in (-.37,.37):
-            b.rbox(cx+dd-.28,cx+dd+.28,cy+l/2-.52,cy+l/2-.19,z0+.52,z0+.68,.04,mi=3)
-        b.box(x0+.12,x0+.55,y1-.76,y1-.16,z0,z0+2.16,mi=1)
-        b.box(cx+.60,cx+1.04,y0+.25,y0+.75,z0+.42,z0+.53,mi=1)
-    elif kind=="lazienka":
-        b.box(x0+.15,x1-.18,y0+.12,y0+.87,z0+.05,z0+.10,mi=3)  # shower tray
-        b.box(x0+.15,x0+.84,y0+.09,y0+.61,z0+.09,z0+1.90,mi=3)  # glass partition concept
-        b.box(x1-.88,x1-.20,y1-.64,y1-.18,z0+.72,z0+.88,mi=3)
-        b.box(x1-.83,x1-.25,y1-.63,y1-.22,z0+.90,z0+.96,mi=3)
-        b.box(x0+.31,x0+.73,y1-.86,y1-.33,z0+.33,z0+.63,mi=3)  # WC
-    elif kind=="pom_gospodarcze":
-        b.box(cx-.36,cx+.36,cy-.45,cy+.31,z0,z0+.87,mi=3)
-        b.box(x0+.09,x0+.48,y0+.07,y1-.06,z0+1.20,z0+2.16,mi=2)
+        # Bed does not block the front room doorway (placed near its rear end).
+        bw=max(1.14,min(1.60,w-.70))
+        bl=max(1.72,min(2.03,d-.72))
+        bed(furniture,cx,cy+.24,z=z0,w=bw,l=bl,mi_frame=0,
+            mi_linen=5,mi_pillow=3,mi_throw=1,
+            mi_duvet=5,head_h=.96,seed=int((abs(cx)+cy)*10),channels=4)
+        furniture.box(x0+.15,x0+.56,y1-.60,y1-.10,z0,z0+2.15,mi=1)
+        furniture.box(x0+.57,x0+.61,y1-.60,y1-.10,z0+.08,z0+2.13,mi=4)
+        for side in (-1,1):
+            nx=cx+side*(bw/2+.24)
+            furniture.rbox(nx-.21,nx+.21,cy+.75,cy+1.15,z0+.37,z0+.49,.04,mi=1)
+        furniture.box(x1-.80,x1-.19,y0+.10,y0+.24,z0+.76,z0+.81,mi=1)
+    elif kind == "lazienka":
+        # Compact freestanding bath + vanity and WC in each of 4 bathrooms.
+        bathtub(furniture,x0+.76,cy-.25,z0,l=1.55,w=.69,h=.55,mi=3)
+        furniture.box(x1-.78,x1-.16,y1-.60,y1-.18,z0+.63,z0+.78,mi=1)
+        basin(furniture,x1-.47,y1-.39,z0+.76,r=.18,mi=3)
+        faucet(furniture,x1-.47,y1-.14,z0+.80,mi=4)
+        furniture.box(x0+.19,x0+.62,y1-.70,y1-.27,z0+.24,z0+.47,mi=3)
+        furniture.box(x0+.23,x0+.59,y1-.66,y1-.29,z0+.47,z0+.58,mi=3)
+        furniture.box(x1-.82,x1-.14,y1-.12,y1-.09,z0+1.17,z0+2.05,mi=4)
+    elif kind == "pom_gospodarcze":
+        furniture.cylinder(cx,cy,z0,z0+.83,.34,seg=28,mi=3)
+        furniture.cylinder(cx,cy,z0+.79,z0+.83,.20,seg=24,mi=4)
+        cabinet_run(furniture,x0+.08,x0+.43,y0+.12,y1-.10,z0+1.21,z0+2.10,mi=2,n=2)
     elif kind in ("wiatrolap","przedpokoj"):
-        b.box(x0+.14,x0+.44,y0+.18,y0+.95,z0,z0+1.96,mi=1)
-        b.box(x1-.88,x1-.18,y1-.45,y1-.22,z0+.30,z0+.68,mi=1)
+        # No 2-metre wardrobes directly in the camera path.
+        furniture.box(x0+.15,x0+.44,y1-.73,y1-.13,z0,z0+1.87,mi=1)
+        furniture.box(x1-.81,x1-.19,y1-.36,y1-.12,z0+.31,z0+.43,mi=1)
+        furniture.cylinder(x1-.51,y1-.30,z0,z0+.12,.14,seg=16,mi=4)
     else:
         raise ValueError(kind)
-    ob=b.build("BLI_Furniture_" + room,
-               [M["soft"],M["wood"],M["kitchen"],M["white_int"],M["door"]])
-    ob["apartment"]=seg+"_"+level
+    ob=furniture.build("BLI_Furniture_"+room,
+        [M["soft"],M["wood"],M["kitchen"],M["white_int"],M["rail"],M["linen_white"]],
+        smooth=True)
+    ob["apartment"]=seg+"_"+data["level"]
     ob["room_key"]=room
     ob["pdf_area_m2"]=data["area_pdf_m2"]
 
