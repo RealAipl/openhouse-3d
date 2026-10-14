@@ -1,0 +1,3 @@
+[submodule "vendor/Blendkit"]
+	path = vendor/Blendkit
+	url = https://github.com/BlenderKit/Blendkit.git
