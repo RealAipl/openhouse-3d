@@ -1,0 +1,72 @@
+name: Twin house - export GLB + all rooms metadata
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/blizniak-export-glb.yml
+
+permissions:
+  contents: read
+
+jobs:
+  glb-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Set up OpenHouse
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -e .
+          echo "ARCHVIZ_PYTHON=$(command -v python)" >> "$GITHUB_ENV"
+      - name: Blender 5.2.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --silent --show-error \
+            https://download.blender.org/release/Blender5.2/blender-5.2.1-linux-x64.tar.xz \
+            --output "$RUNNER_TEMP/blender.tar.xz"
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Build complete twin-house in Blender
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b --python-exit-code 1 \
+            --python run.py -- \
+            --house blizniak_dwulokalowy --save --norender --no-polish --device CPU
+      - name: Export actual geometry + scene metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b \
+            houses/blizniak_dwulokalowy/output/blizniak_dwulokalowy.blend \
+            --python-exit-code 1 \
+            --python houses/blizniak_dwulokalowy/export_glb.py
+      - name: Validate exported model
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          path=Path('houses/blizniak_dwulokalowy/output/export/blizniak_4_lokale.glb')
+          assert path.stat().st_size>50000
+          with path.open('rb') as f:
+              assert f.read(4)==b'glTF'
+          meta=json.loads(path.with_name('model_metadata.json').read_text())
+          assert len(meta['rooms'])==24 and len(meta['cameras'])==30
+          print('Valid GLB size',path.stat().st_size)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: blizniak-4-lokale-3d-glb-model
+          path: |
+            houses/blizniak_dwulokalowy/output/export/*.glb
+            houses/blizniak_dwulokalowy/output/export/*.json
+          retention-days: 7
+          if-no-files-found: error
