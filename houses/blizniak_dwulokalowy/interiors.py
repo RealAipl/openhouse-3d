@@ -112,8 +112,10 @@ def _furnish_room(room, box, M):
         furniture.box(x0+.23,x0+.59,y1-.66,y1-.29,z0+.47,z0+.58,mi=3)
         furniture.box(x1-.82,x1-.14,y1-.12,y1-.09,z0+1.17,z0+2.05,mi=4)
     elif kind == "pom_gospodarcze":
-        furniture.cylinder(cx,cy,z0,z0+.83,.34,seg=28,mi=3)
-        furniture.cylinder(cx,cy,z0+.79,z0+.83,.20,seg=24,mi=4)
+        wm_x = x0+.51 if seg=="A" else x1-.51
+        wm_y = y1-.45
+        furniture.cylinder(wm_x,wm_y,z0,z0+.83,.34,seg=28,mi=3)
+        furniture.cylinder(wm_x,wm_y,z0+.79,z0+.83,.20,seg=24,mi=4)
         cabinet_run(furniture,x0+.08,x0+.43,y0+.12,y1-.10,z0+1.21,z0+2.10,mi=2,n=2)
     elif kind in ("wiatrolap","przedpokoj"):
         # No 2-metre wardrobes directly in the camera path.
