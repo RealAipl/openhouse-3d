@@ -28,7 +28,7 @@ jobs:
           test -f vendor/Blendkit/bk_client/client/go.mod
           test -e vendor/Blendkit/bk_proxor/.git
           git -C vendor/Blendkit rev-parse HEAD
-          grep -q 'GPL' vendor/Blendkit/LICENSE
+          grep -q 'GNU GENERAL PUBLIC LICENSE' vendor/Blendkit/LICENSE
           python -m compileall -q tools/blendkit_free_search.py
           echo "Submodule, nested dependencies and open-source code verified."
       - name: Find legally usable free CC0 furniture from official service
