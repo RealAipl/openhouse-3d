@@ -47,9 +47,7 @@ CAMS = {
     "stairs_left": ((-17.0, 9.5, 5.8), (-8.7, 7.8, 2.1), 29),
     "stairs_right": ((17.0, 9.5, 5.8), (8.7, 7.8, 2.1), 29),
 }
-# A fixed camera for every documented room, including small service rooms.
-for room, (x0, x1, y0, y1, z0, z1) in ROOMS.items():
-    cx, cy = (x0+x1)/2, (y0+y1)/2
-    CAMS["room_" + room] = ((cx, cy - 0.24, z0 + 1.55),
-                             (cx + (-0.6 if cx>0 else 0.6), cy + 0.48, z0 + 1.43), 19)
-
+# Independent interior cameras match the collision-checked film positions.
+for room in ROOMS:
+    p,t,lens=room_camera_pose(room)
+    CAMS["room_"+room] = (p,t,lens)
