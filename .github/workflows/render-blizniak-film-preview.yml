@@ -50,7 +50,28 @@ jobs:
           "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b --python-exit-code 1 \
             --python run.py -- \
             --house blizniak_dwulokalowy --device CPU \
-            --film all --film-preview --film-step 6 --no-polish
+            --film all --film-preview --film-step 6 --no-polish 2>&1 | tee "$RUNNER_TEMP/camera_clearance.log"
+      - name: Report wall and lens clearance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json, os
+          lines=Path(os.environ["RUNNER_TEMP"],"camera_clearance.log").read_text().splitlines()
+          hits=[v for v in lines if "[clear]" in v]
+          tight=[v for v in hits if "TIGHT" in v]
+          blocked=[v for v in hits if "LENS BLOCKED" in v]
+          assert len(hits)==27, ("Missing shot camera checks",len(hits))
+          assert not blocked, ("Blocked cameras",blocked)
+          summary={"shots_checked":len(hits),"tight_views":len(tight),"blocked_views":0,
+                   "tight_names":[v.split("[clear]")[1].split("closest")[0].strip() for v in tight]}
+          root=Path("houses/blizniak_dwulokalowy/output/film")
+          root.mkdir(parents=True,exist_ok=True)
+          (root/"camera_clearance.json").write_text(json.dumps(summary,indent=2),encoding="utf-8")
+          print(summary)
+          PY
+
       - name: Assemble storyboard film
         shell: bash
         run: |
@@ -88,5 +109,6 @@ jobs:
           path: |
             houses/blizniak_dwulokalowy/output/film/blizniak_storyboard.mp4
             houses/blizniak_dwulokalowy/output/film/contact_sheet.jpg
+            houses/blizniak_dwulokalowy/output/film/camera_clearance.json
           retention-days: 3
           if-no-files-found: error
