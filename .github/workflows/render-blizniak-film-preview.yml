@@ -50,7 +50,7 @@ jobs:
           "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b --python-exit-code 1 \
             --python run.py -- \
             --house blizniak_dwulokalowy --device CPU \
-            --film all --film-preview --film-step 6 --no-polish 2>&1 | tee "$RUNNER_TEMP/camera_clearance.log"
+            --film all --film-preview --film-step 8 --no-polish 2>&1 | tee "$RUNNER_TEMP/camera_clearance.log"
       - name: Report wall and lens clearance
         shell: bash
         run: |
@@ -64,6 +64,7 @@ jobs:
           blocked=[v for v in hits if "LENS BLOCKED" in v]
           assert len(hits)==27, ("Missing shot camera checks",len(hits))
           assert not blocked, ("Blocked cameras",blocked)
+          assert not tight, ("Camera views too close to walls/furniture",tight)
           summary={"shots_checked":len(hits),"tight_views":len(tight),"blocked_views":0,
                    "tight_names":[v.split("[clear]")[1].split("closest")[0].strip() for v in tight]}
           root=Path("houses/blizniak_dwulokalowy/output/film")
