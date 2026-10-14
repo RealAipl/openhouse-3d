@@ -1,0 +1,77 @@
+name: OpenHouse 3D - test renderu CPU
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Pobierz kod repozytorium
+        uses: actions/checkout@v4
+
+      - name: Skonfiguruj Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Zainstaluj bezplatne zaleznosci Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          echo "ARCHVIZ_PYTHON=$(command -v python)" >> "$GITHUB_ENV"
+
+      - name: Pobierz Blender 5.2.1 ze strony projektu
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --silent --show-error \
+            'https://download.blender.org/release/Blender5.2/blender-5.2.1-linux-x64.tar.xz' \
+            --output "$RUNNER_TEMP/blender-5.2.1.tar.xz"
+          tar -xJf "$RUNNER_TEMP/blender-5.2.1.tar.xz" -C "$RUNNER_TEMP"
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" --version
+
+      - name: Utworz bezpieczny dom demonstracyjny
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/new_house.py luxoria_demo --title 'Demo LUXORIA'
+
+      - name: Wyrenderuj jedna klatke w Blender Cycles (CPU)
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b --python-exit-code 1 \
+            --python run.py -- \
+            --house luxoria_demo --cam hero --samples 16 --scale 50 \
+            --res 1280x720 --no-polish --device CPU
+
+      - name: Zweryfikuj prawdziwy obraz PNG
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          p = Path('houses/luxoria_demo/output/renders/hero.png')
+          assert p.exists() and p.stat().st_size > 1000, 'Nie utworzono poprawnego renderu'
+          with Image.open(p) as image:
+              image.verify()
+          with Image.open(p) as image:
+              assert image.size == (640, 360), f'Zla rozdzielczosc: {image.size}'
+              print('GOTOWE:', p, 'rozdzielczosc:', image.size, 'bajtow:', p.stat().st_size)
+          PY
+
+      - name: Udostepnij render do pobrania
+        uses: actions/upload-artifact@v4
+        with:
+          name: openhouse-3d-luxoria-demo-png
+          path: houses/luxoria_demo/output/renders/hero.png
+          if-no-files-found: error
+          retention-days: 3
