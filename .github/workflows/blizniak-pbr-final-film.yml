@@ -1,0 +1,126 @@
+name: Twin house - final PBR Cycles film 720p
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Twin house - all 4 apartments Cycles film 720p
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  render-five-chapters:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        include:
+          - chapter: facade_stairs
+            cameras: exterior_front,stair_A,stair_B
+          - chapter: A_ground
+            cameras: visit_A_ground_1,visit_A_ground_2,visit_A_ground_3,visit_A_ground_4,visit_A_ground_5,visit_A_ground_6,visit_A_ground_7
+          - chapter: A_upper
+            cameras: visit_A_upper_1,visit_A_upper_2,visit_A_upper_3,visit_A_upper_4,visit_A_upper_5
+          - chapter: B_ground
+            cameras: visit_B_ground_1,visit_B_ground_2,visit_B_ground_3,visit_B_ground_4,visit_B_ground_5,visit_B_ground_6,visit_B_ground_7
+          - chapter: B_upper
+            cameras: visit_B_upper_1,visit_B_upper_2,visit_B_upper_3,visit_B_upper_4,visit_B_upper_5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install OpenHouse dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -e .
+          echo "ARCHVIZ_PYTHON=$(command -v python)" >> "$GITHUB_ENV"
+      - name: Download and SHA256-verify Poly Haven CC0 PBR maps
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/fetch_assets.py houses/blizniak_dwulokalowy/assets/sources.json
+      - name: Download Blender 5.2.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --silent --show-error \
+            https://download.blender.org/release/Blender5.2/blender-5.2.1-linux-x64.tar.xz \
+            --output "$RUNNER_TEMP/blender.tar.xz"
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Render moving cameras with Cycles
+        shell: bash
+        env:
+          SCENES: ${{ matrix.cameras }}
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b --python-exit-code 1 \
+            --python run.py -- --house blizniak_dwulokalowy \
+            --film "$SCENES" --film-draft --film-step 6 --no-polish --device CPU
+      - name: Validate 3D frames of chapter
+        shell: bash
+        env:
+          SCENES: ${{ matrix.cameras }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          root=Path('houses/blizniak_dwulokalowy/output/film/draft')
+          for shot in os.environ['SCENES'].split(','):
+              frames=sorted((root/shot).glob('f_*.png'))
+              assert len(frames)>=4, (shot,len(frames))
+              assert frames[0].stat().st_size>3000, shot
+              print('PASS',shot,len(frames),'Cycles frames')
+          PY
+      - name: Publish frames
+        uses: actions/upload-artifact@v4
+        with:
+          name: blizniak-pbr-cycles-frames-${{ matrix.chapter }}
+          path: houses/blizniak_dwulokalowy/output/film/draft/
+          retention-days: 3
+          if-no-files-found: error
+          compression-level: 1
+
+  assemble:
+    needs: render-five-chapters
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install FFmpeg and fonts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -e .
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-dejavu-core fontconfig
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: blizniak-pbr-cycles-frames-*
+          merge-multiple: true
+          path: houses/blizniak_dwulokalowy/output/film/draft/
+      - name: Build full 24-room film
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m houses.blizniak_dwulokalowy.finish_film
+      - name: Publish MP4, contact sheet, QA manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: blizniak-4-lokale-final-pbr-cycles-walkthrough-720p
+          path: |
+            houses/blizniak_dwulokalowy/output/film/final/blizniak_4_lokale_cycles_walkthrough_720p.mp4
+            houses/blizniak_dwulokalowy/output/film/final/contact_sheet.jpg
+            houses/blizniak_dwulokalowy/output/film/final/film_report.json
+          retention-days: 7
+          if-no-files-found: error
