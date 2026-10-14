@@ -1,0 +1,45 @@
+name: Blendkit - verify submodule and locate CC0 furniture
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/blendkit-free-catalog.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-blendkit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout BlenderKit with nested client modules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Check pinned repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f vendor/Blendkit/__init__.py
+          test -f vendor/Blendkit/LICENSE
+          test -f vendor/Blendkit/bk_client/go.mod
+          test -e vendor/Blendkit/bk_proxor/.git
+          git -C vendor/Blendkit rev-parse HEAD
+          grep -q 'GPL' vendor/Blendkit/LICENSE
+          python -m compileall -q tools/blendkit_free_search.py
+          echo "Submodule, nested dependencies and open-source code verified."
+      - name: Find legally usable free CC0 furniture from official service
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/blendkit_free_search.py --strict
+      - name: Publish catalogue metadata ONLY (no licensed model binaries)
+        uses: actions/upload-artifact@v4
+        with:
+          name: blendkit-verified-free-cc0-models
+          path: tmp/blendkit_free_candidates.json
+          if-no-files-found: error
+          retention-days: 3
