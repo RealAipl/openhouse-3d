@@ -1,0 +1,99 @@
+name: OpenHouse 3D - Webster interior quality test
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/render-webster-interior.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: webster-interior-quality-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  render-webster-interior:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install OpenHouse Python dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          echo "ARCHVIZ_PYTHON=$(command -v python)" >> "$GITHUB_ENV"
+
+      - name: Download Blender 5.2.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --silent --show-error \
+            'https://download.blender.org/release/Blender5.2/blender-5.2.1-linux-x64.tar.xz' \
+            --output "$RUNNER_TEMP/blender-5.2.1.tar.xz"
+          tar -xJf "$RUNNER_TEMP/blender-5.2.1.tar.xz" -C "$RUNNER_TEMP"
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" --version
+
+      - name: Fetch licensed CC0 Webster materials
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/fetch_assets.py houses/webster/assets/sources.json
+
+      - name: Check Webster room camera and scene
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from houses import load
+          h = load('webster')
+          assert 'living' in h.CAMS, 'Webster living room camera is missing'
+          assert 'living' not in h.EXT, 'Chosen camera is exterior'
+          print('Verified Webster living room camera')
+          PY
+
+      - name: Render Webster living room with Blender Cycles on CPU
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b --python-exit-code 1 \
+            --python run.py -- \
+            --house webster --cam living --samples 48 \
+            --res 1280x720 --scale 100 --no-polish --device CPU
+
+      - name: Validate generated image
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageStat
+          p=Path('houses/webster/output/renders/living.png')
+          assert p.is_file() and p.stat().st_size>5000, f'No usable render: {p}'
+          with Image.open(p) as source:
+              source.verify()
+          with Image.open(p) as source:
+              assert source.size==(1280,720), f'Unexpected size: {source.size}'
+              rgb=source.convert('RGB').resize((128,72))
+              variations=ImageStat.Stat(rgb).stddev
+              assert max(variations)>5, f'Image appears blank: {variations}'
+              print(f'RENDER OK: {p}; {source.size}; {p.stat().st_size} bytes; channel_stddev={variations}')
+          PY
+
+      - name: Upload the verified room render
+        uses: actions/upload-artifact@v4
+        with:
+          name: openhouse-webster-interior-living-720p
+          path: houses/webster/output/renders/living.png
+          retention-days: 3
+          if-no-files-found: error
