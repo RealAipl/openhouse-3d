@@ -1,0 +1,99 @@
+name: OpenHouse - blizniak 4 apartments blockout
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/render-blizniak-concept.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: openhouse-blizniak-concept
+  cancel-in-progress: false
+
+jobs:
+  build-concept:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -e .
+          echo "ARCHVIZ_PYTHON=$(command -v python)" >> "$GITHUB_ENV"
+
+      - name: Validate four-apartment programme before rendering
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from houses.blizniak_dwulokalowy import plan, house
+          plan.validate_program()
+          assert len(plan.ROOMS) == 24
+          assert len(house.CAMS) == 30
+          assert len(house.SHOTS) == 27
+          assert len(set(house.CAMS)) == len(house.CAMS)
+          for segment in ('A', 'B'):
+              for level, expected in [('ground',7),('upper',5)]:
+                  assert sum(k.startswith(segment+'_'+level+'_') for k in plan.ROOMS) == expected
+          print('Four apartments and all 24 scheduled rooms verified')
+          PY
+
+      - name: Install Blender 5.2.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --silent --show-error \
+            https://download.blender.org/release/Blender5.2/blender-5.2.1-linux-x64.tar.xz \
+            --output "$RUNNER_TEMP/blender.tar.xz"
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" --version
+
+      - name: Render real 3D model - exterior and first floor interior
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b --python-exit-code 1 \
+            --python run.py -- \
+            --house blizniak_dwulokalowy \
+            --cam hero,room_A_upper_5 \
+            --samples 16 --res 960x540 --scale 100 \
+            --no-polish --device CPU
+
+      - name: Validate both PNGs are nonempty
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from PIL import Image, ImageStat
+          from pathlib import Path
+          for name in ('hero','room_A_upper_5'):
+              path=Path('houses/blizniak_dwulokalowy/output/renders')/(name+'.png')
+              assert path.exists() and path.stat().st_size>7000, 'Missing/empty '+name
+              with Image.open(path) as im:
+                  im.verify()
+              with Image.open(path) as im:
+                  assert im.size==(960,540), (name,im.size)
+                  spread=ImageStat.Stat(im.convert('RGB').resize((64,36))).stddev
+                  assert max(spread)>6, (name,spread)
+              print('Verified',name,path.stat().st_size,'bytes')
+          PY
+
+      - name: Upload concept renders
+        uses: actions/upload-artifact@v4
+        with:
+          name: openhouse-blizniak-full-building-first-renders
+          path: houses/blizniak_dwulokalowy/output/renders/*.png
+          retention-days: 3
+          if-no-files-found: error
