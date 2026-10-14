@@ -36,6 +36,32 @@ def materials():
         "roof": m.new_mat("BliZniak_Roof", (0.29, 0.31, 0.34, 1), rough=0.88),
         "door": m.new_mat("BliZniak_Door", (0.16, 0.18, 0.19, 1), rough=0.45),
     })
+
+    # Optional CC0 photo-derived maps from verified Poly Haven manifests.
+    # OpenHouse can still run without the assets: procedural materials remain.
+    from pathlib import Path
+    textures=Path(__file__).resolve().parent/"assets"
+    def image_detail(material_key,filename,input_name,noncolor=False):
+        path=textures/filename
+        if not path.is_file():
+            return
+        import bpy
+        mat=M[material_key]
+        nt=mat.node_tree
+        bsdf=next(n for n in nt.nodes if n.type=="BSDF_PRINCIPLED")
+        tex=nt.nodes.new("ShaderNodeTexImage")
+        tex.label="Verified CC0 Poly Haven: "+filename
+        tex.image=bpy.data.images.load(str(path),check_existing=True)
+        tex.image.colorspace_settings.name="Non-Color" if noncolor else "sRGB"
+        coordinates=nt.nodes.get("BLI_RealScale_Coords")
+        if coordinates is None:
+            coordinates=nt.nodes.new("ShaderNodeTexCoord")
+            coordinates.name="BLI_RealScale_Coords"
+        nt.links.new(coordinates.outputs["Object"],tex.inputs["Vector"])
+        nt.links.new(tex.outputs["Color"],bsdf.inputs[input_name])
+    image_detail("wood_floor","wood_floor_diff_2k.jpg","Base Color")
+    image_detail("wood_floor","wood_floor_rough_2k.jpg","Roughness",True)
+    image_detail("soft","fabric_leather_01_rough_2k.jpg","Roughness",True)
     return M
 
 
