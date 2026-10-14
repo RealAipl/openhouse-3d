@@ -114,7 +114,7 @@ def room_camera_pose(room):
         target = (cx,y1-0.38,z0+1.20)
         lens = 16
     elif meta["name"] == "pom_gospodarcze":
-        p=(x1-.49 if sign == +1 else x0+.49,y0+.43,z0+1.50)
+        p=(x1-.49 if sign == +1 else x0+.49,y0+.60,z0+1.50)
         target=(cx,y1-.28,z0+1.25)
         lens=16
     else:
