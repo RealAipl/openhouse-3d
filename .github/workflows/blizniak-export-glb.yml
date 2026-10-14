@@ -66,7 +66,21 @@ jobs:
               assert f.read(4)==b'glTF'
           meta=json.loads(path.with_name('model_metadata.json').read_text())
           assert len(meta['rooms'])==24 and len(meta['cameras'])==30
-          print('Valid GLB size',path.stat().st_size)
+          import struct
+          with path.open('rb') as raw:
+              head=raw.read(12)
+              n,typ=struct.unpack('<I4s',raw.read(8))
+              scene=json.loads(raw.read(n))
+          assert len(scene.get('meshes',[]))>=85, 'Missing geometry'
+          assert len(scene.get('cameras',[]))==30
+          assert len(scene.get('textures',[]))>=2, 'CC0 PBR maps missing'
+          for mat in scene.get('materials',[]):
+              pbr=mat.get('pbrMetallicRoughness',{})
+              for key in ('baseColorTexture','metallicRoughnessTexture'):
+                  tex=pbr.get(key)
+                  if tex:
+                      assert tex.get('texCoord',0)>=0, (mat.get('name'),tex)
+          print('Valid GLB size',path.stat().st_size,'textures',len(scene['textures']))
           PY
       - uses: actions/upload-artifact@v4
         with:
