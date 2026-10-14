@@ -24,6 +24,12 @@ jobs:
           set -euo pipefail
           python -m pip install -e .
           echo "ARCHVIZ_PYTHON=$(command -v python)" >> "$GITHUB_ENV"
+      - name: Download SHA256-verified Poly Haven CC0 textures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/fetch_assets.py houses/blizniak_dwulokalowy/assets/sources.json
+
       - name: Blender 5.2.1
         shell: bash
         run: |
