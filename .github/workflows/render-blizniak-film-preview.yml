@@ -50,7 +50,7 @@ jobs:
           "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b --python-exit-code 1 \
             --python run.py -- \
             --house blizniak_dwulokalowy --device CPU \
-            --film all --film-preview --film-step 8 --no-polish
+            --film all --film-preview --film-step 6 --no-polish
       - name: Assemble storyboard film
         shell: bash
         run: |
