@@ -83,44 +83,65 @@ def _make_glazing(M):
 
 
 def _external_stair(M, sign):
-    """Two-flight switchback at each lateral façade; risers and landing are visually explicit."""
-    b=MB()
-    stair_inner=7.99; near0,near1=8.03,9.12; far0,far1=9.27,10.36
-    yy0, yy1 = 6.08,8.50
-    n=8; half=Z_UPPER_LANDING/2; riser=half/n
-    def X(a,b): return (a,b) if sign==1 else (-b,-a)
-    # Flight one: forward (towards rear), lower half.
+    """Mirrored 2-flight switchback with genuine 3D clearance and upper entry access.
+
+    Drawing shows side switchback stairs to four independent dwellings. Exact
+    pitch, landings and railing assembly are concept interpretations.
+    """
+    mesh=MB()
+    near=(8.03,9.12)
+    far=(9.27,10.36)
+    n=8
+    lower,upper=5.55,8.02
+    middle=Z_UPPER_LANDING/2
+    step_h=middle/n
+
+    def xr(a,b):
+        return (a,b) if sign==1 else (-b,-a)
+
+    # Outer flight: ground entrance at y=8.02, climbing towards y=5.55.
     for i in range(n):
-        y0=yy0+(yy1-yy0)*i/n; y1=yy0+(yy1-yy0)*(i+1)/n
-        z=(i+1)*riser
-        a,c=X(far0,far1)
-        b.box(a,c,y0,y1,z-.16,z)
-    # Continuous middle platform connects the two flights.
-    a,c=X(near0,far1)
-    b.box(a,c,yy1,yy1+.78,half-.16,half)
-    # Flight two reverses direction and terminates at the upper side landing.
+        ya=upper-(upper-lower)*(i+1)/n
+        yb=upper-(upper-lower)*i/n
+        z=(i+1)*step_h
+        a,b=xr(*far)
+        mesh.box(a,b,ya,yb,max(-.01,z-.155),z)
+
+    # U-turn mid-landing, with adequate tread depth.
+    a,b=xr(near[0],far[1])
+    mesh.box(a,b,4.94,lower,middle-.16,middle)
+
+    # Inner flight returns towards the dwelling at y=8.02.
     for i in range(n):
-        y0=yy1-(yy1-yy0)*(i+1)/n; y1=yy1-(yy1-yy0)*i/n
-        z=half+(i+1)*riser
-        a,c=X(near0,near1)
-        b.box(a,c,y0,y1,z-.16,z)
-    a,c=X(stair_inner,near1)
-    b.box(a,c,5.83,8.87,Z_UPPER_LANDING-.12,Z_UPPER_LANDING)
-    b.build("BLI_External_Stair_" + ("R" if sign==1 else "L"),[M["stone"]])
+        ya=lower+(upper-lower)*i/n
+        yb=lower+(upper-lower)*(i+1)/n
+        z=middle+(i+1)*step_h
+        a,b=xr(*near)
+        mesh.box(a,b,ya,yb,z-.155,z)
+
+    # Small landing in front of upstairs entry y=7.76..8.68.
+    a,b=xr(7.94,near[1])
+    mesh.box(a,b,upper,8.87,Z_UPPER_LANDING-.15,Z_UPPER_LANDING)
+    mesh.build("BLI_External_Stair_"+("R" if sign==1 else "L"),[M["stone"]])
+
     rail=MB()
-    for ax in (near0,far1):
-        x=sign*ax
-        rail.tube((x,yy0,Z_UPPER_LANDING+.8),
-                  (x,yy1,Z_UPPER_LANDING/2+.95),.032,.032)
-    for ax in (near0,far1):
-        x=sign*ax
-        rail.tube((x,yy0,.88), (x,yy1,half+.88),.028,.028)
-    for yy in (5.83,7.2,8.85):
-        rail.tube((sign*stair_inner,yy,Z_UPPER_LANDING),
-                  (sign*stair_inner,yy,Z_UPPER_LANDING+1.05),.03,.03)
-    rail.tube((sign*stair_inner,5.83,Z_UPPER_LANDING+1.05),
-              (sign*stair_inner,8.85,Z_UPPER_LANDING+1.05),.03,.03)
-    rail.build("BLI_Stair_Railings_" + ("R" if sign==1 else "L"),[M["rail"]])
+    # Sloped handrails and real vertical posts on the open edges.
+    for axis,y_start,y_stop,z_start,z_stop in (
+        (far[1],upper,lower,0,middle),
+        (near[1],lower,upper,middle,Z_UPPER_LANDING),
+    ):
+        x=sign*axis
+        for k in range(5):
+            t=k/4
+            y=y_start+(y_stop-y_start)*t
+            z=z_start+(z_stop-z_start)*t
+            rail.tube((x,y,z),(x,y,z+.98),.022,.022)
+        rail.tube((x,y_start,z_start+.98),(x,y_stop,z_stop+.98),.034,.034)
+    x=sign*near[1]
+    for y in (8.05,8.46,8.83):
+        rail.tube((x,y,Z_UPPER_LANDING),(x,y,Z_UPPER_LANDING+1.0),.026,.026)
+    rail.tube((x,8.05,Z_UPPER_LANDING+1.0),(x,8.83,Z_UPPER_LANDING+1.0),.034,.034)
+    rail.build("BLI_Switchback_Rails_"+("R" if sign==1 else "L"),[M["rail"]])
 
 
 def build(M):
