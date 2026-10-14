@@ -99,22 +99,22 @@ def room_camera_pose(room):
     sign = +1 if meta["segment"] == "A" else -1
 
     if meta["name"] == "salon_z_aneksem":
-        x = x0+0.52 if sign == +1 else x1-0.52
+        x = x0+0.75 if sign == +1 else x1-0.75
         p = (x, y0+0.67, z0+1.52)
         target = (cx+0.15*sign, y1-0.91, z0+1.33)
         lens = 18
     elif meta["name"].startswith("pokoj"):
-        x = x0+0.49 if sign == +1 else x1-0.49
+        x = x0+0.72 if sign == +1 else x1-0.72
         p = (x,y0+0.56,z0+1.53)
         target = (cx+0.20*sign, y1-0.62,z0+1.32)
         lens = 18
     elif meta["name"] == "lazienka":
-        x = x1-0.41 if sign == +1 else x0+0.41
+        x = x1-0.69 if sign == +1 else x0+0.69
         p = (x,y0+0.93,z0+1.54)
         target = (cx,y1-0.38,z0+1.20)
         lens = 16
     elif meta["name"] == "pom_gospodarcze":
-        p=(cx,y0+0.43,z0+1.50)
+        p=(x1-.49 if sign == +1 else x0+.49,y0+.43,z0+1.50)
         target=(cx,y1-.28,z0+1.25)
         lens=16
     else:
