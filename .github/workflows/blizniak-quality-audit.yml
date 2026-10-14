@@ -1,0 +1,112 @@
+name: Twin house - geometry and four-room Cycles audit
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/blizniak-quality-audit.yml
+
+permissions:
+  contents: read
+
+jobs:
+  audit-and-render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install OpenHouse dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -e .
+          echo "ARCHVIZ_PYTHON=$(command -v python)" >> "$GITHUB_ENV"
+
+      - name: Verify geometry and camera coverage without Blender
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from houses.blizniak_dwulokalowy import plan, house
+          from houses.blizniak_dwulokalowy.shots import SHOTS
+          plan.validate_program()
+          for segment in ("A","B"):
+              for level,n in (("ground",7),("upper",5)):
+                  rooms = [k for k,v in plan.ROOM_META.items() if v["segment"]==segment and v["level"]==level]
+                  assert len(rooms)==n, (segment,level,rooms)
+                  assert abs(sum(plan.ROOM_META[k]["area_pdf_m2"] for k in rooms)-plan.PDF_TOTALS_M2[level]) < .005
+          for name in plan.ROOMS:
+              assert "room_"+name in house.CAMS, name
+              assert any(shot["name"]=="visit_"+name for shot in SHOTS), name
+              p,t,l=plan.room_camera_pose(name)
+              assert l>=15 and 1.4<=(p[2]-plan.LEVEL_Z[plan.ROOM_META[name]["level"]])<=1.7
+          assert len(SHOTS)==27 and len(house.CAMS)==30
+          # Expose discrepancies between approximate visual footprint and original PDF net area.
+          diffs={}
+          for k,(x0,x1,y0,y1,*_) in plan.ROOMS.items():
+              bbox=(x1-x0)*(y1-y0)
+              diffs[k]=round(bbox-plan.ROOM_META[k]["area_pdf_m2"],3)
+          print("Geometry bbox minus PDF usable area, metres^2:",json.dumps(diffs,indent=2))
+          assert max(abs(d) for d in diffs.values())<2.25, "Gross boxes depart too far from room schedule"
+          Path("houses/blizniak_dwulokalowy").joinpath("audit_summary.json").write_text(
+              json.dumps({"room_count":len(plan.ROOMS),
+                          "camera_count":len(house.CAMS),
+                          "shot_count":len(SHOTS),
+                          "bbox_minus_pdf_m2":diffs},indent=2),encoding="utf-8")
+          print("AUDIT PASS: 4 dwellings, 24 rooms, 2 side stairs, all cameras and all visits.")
+          PY
+
+      - name: Install Blender 5.2.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --retry 3 --location --silent --show-error \
+            https://download.blender.org/release/Blender5.2/blender-5.2.1-linux-x64.tar.xz \
+            --output "$RUNNER_TEMP/blender.tar.xz"
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+
+      - name: Save the full Blender 3D model and render four architecture checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b --python-exit-code 1 \
+            --python run.py -- --house blizniak_dwulokalowy \
+            --save --cam hero,stairs_left,room_A_ground_6,room_B_upper_5 \
+            --samples 24 --res 960x540 --scale 100 --no-polish --device CPU
+
+      - name: Validate outputs and model
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageStat
+          h=Path("houses/blizniak_dwulokalowy/output")
+          blend=h/"blizniak_dwulokalowy.blend"
+          assert blend.exists() and blend.stat().st_size>100000, "Blender model missing"
+          for name in ("hero","stairs_left","room_A_ground_6","room_B_upper_5"):
+              p=h/"renders"/(name+".png")
+              assert p.exists() and p.stat().st_size>5000, name
+              with Image.open(p) as im:
+                  im.verify()
+              with Image.open(p) as im:
+                  assert im.size==(960,540), im.size
+                  assert max(ImageStat.Stat(im.convert("RGB").resize((80,45))).stddev)>6, "Blank: "+name
+              print("VALID",name,p.stat().st_size)
+          print("Blender scene",blend.stat().st_size)
+          PY
+      - name: Save render comparison and editable Blender file
+        uses: actions/upload-artifact@v4
+        with:
+          name: blizniak-verified-model-cycles-renders
+          path: |
+            houses/blizniak_dwulokalowy/output/blizniak_dwulokalowy.blend
+            houses/blizniak_dwulokalowy/output/renders/*.png
+            houses/blizniak_dwulokalowy/audit_summary.json
+          retention-days: 7
+          if-no-files-found: error
