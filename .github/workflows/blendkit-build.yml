@@ -1,0 +1,65 @@
+name: Blendkit - official addon package for OpenHouse cloud
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/blendkit-build.yml
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout pinned official Blendkit source + dependencies
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Validate importer syntax and dependency sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f vendor/Blendkit/__init__.py
+          test -f vendor/Blendkit/bk_client/client/go.mod
+          test -f vendor/Blendkit/bk_proxor/src/bk_proxor/__init__.py
+          python -m py_compile houses/blizniak_dwulokalowy/import_blendkit_models.py
+          echo "Pinned Blendkit addon and our .blend importer are ready."
+
+      - name: Package the official Blender add-on without installing local Blender
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          cd vendor/Blendkit
+          python dev.py build
+          test -s out/blenderkit.zip
+
+      - name: Inspect add-on contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          path=Path('vendor/Blendkit/out/blenderkit.zip')
+          with zipfile.ZipFile(path) as z:
+              names=z.namelist()
+              assert any(x.endswith('blenderkit/__init__.py') for x in names)
+              assert any('bk_proxor/' in x for x in names)
+              assert any('/client/' in x for x in names)
+              print('Official addon zip built:',round(path.stat().st_size/1024/1024,1),'MB')
+          PY
+
+      - name: Publish official Blender addon ZIP (GPL-2.0 source)
+        uses: actions/upload-artifact@v4
+        with:
+          name: pinned-blendkit-official-addon-zip
+          path: vendor/Blendkit/out/blenderkit.zip
+          retention-days: 7
+          if-no-files-found: error
