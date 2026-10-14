@@ -31,8 +31,9 @@ for segment in ("A","B"):
             p,t,lens=room_camera_pose(room)
             x0,x1,y0,y1,z0,z1=ROOMS[room]
             # The camera translates only 0.16m and pans to avoid penetrating geometry.
-            q=(p[0]+(0.15 if segment=="A" else -0.15),
-               p[1]+0.08,p[2])
+            # Move INWARD from the nearest wall, never sideways through it.
+            shift = .12 if p[0] < (x0+x1)/2 else (-.12 if p[0] > (x0+x1)/2 else 0.0)
+            q=(p[0]+shift,p[1]+.06,p[2])
             t2=(t[0]+(0.23 if segment=="A" else -0.23),t[1],t[2])
             SHOTS.append(_shot("visit_"+room,[(p,t),(q,t2)],
               "SEGMENT %s | %s | %s" % (segment,level.upper(),d["name"].upper()),
