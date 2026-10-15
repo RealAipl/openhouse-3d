@@ -1,0 +1,56 @@
+name: LUXORIA - bulk realistic CC0 furniture ZIP
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/polyhaven-home-pack.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build-household-kit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Plan original 3D furniture collection, including sizes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile tools/polyhaven_household_pack.py
+          python -u tools/polyhaven_household_pack.py --mode plan
+
+      - name: Download complete real 3D models and texture dependencies from CC0 repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/polyhaven_household_pack.py --mode download
+
+      - name: Verify archive integrity and licence documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json, zipfile
+          fn=Path('tmp/polyhaven-home-premium-cc0-pack.zip')
+          assert fn.is_file() and fn.stat().st_size>10_000_000, 'Asset pack not generated'
+          with zipfile.ZipFile(fn) as z:
+              assert z.testzip() is None, "Corrupted ZIP"
+              models=[x for x in z.namelist() if x.endswith('.blend')]
+              metadata=json.loads(z.read('manifest.json'))
+              assert len(models)==metadata['item_count']>=15, (len(models),metadata['item_count'])
+              assert metadata['license']=='CC0 1.0'
+              print(f'PASS: {len(models)} Blender models, total zipped {fn.stat().st_size/1048576:.1f}MB')
+          PY
+
+      - name: Publish ONE ready-made realistic household archive for user
+        uses: actions/upload-artifact@v4
+        with:
+          name: polyhaven-realistic-furniture-bundle-cc0
+          path: tmp/polyhaven-home-premium-cc0-pack.zip
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
