@@ -1,0 +1,32 @@
+name: LUXORIA - select fresh household assets v2
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/luxoria-home-assets-v2-plan.yml
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit selected unseen asset metadata and dependency links
+        shell: bash
+        run: |
+          python -m pip install Pillow
+          python -m py_compile tools/luxoria_home_assets_v2.py
+          python -u tools/luxoria_home_assets_v2.py --mode plan
+      - uses: actions/upload-artifact@v4
+        with:
+          name: luxoria-home-v2-planned-assets
+          path: tmp/luxoria-home-extra-v2/plan.json
+          retention-days: 3
+          if-no-files-found: error
