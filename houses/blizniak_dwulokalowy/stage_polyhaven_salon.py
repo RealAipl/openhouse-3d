@@ -197,6 +197,17 @@ def main():
     scene.render.image_settings.file_format="PNG"
     # Use existing Cycles illumination, HDRI/world and corrected room camera.
     scene.render.filepath=str(OUT/"salon_A_pietro_polyhaven_CC0.png")
+    # Blender library-load can leave dangling 8K images as orphan datablocks.
+    # They are not used by the 1K scene, but pack_all would still try to read them.
+    for image in list(bpy.data.images):
+        if image.users==0:
+            bpy.data.images.remove(image)
+    dangling=[]
+    for image in bpy.data.images:
+        if image.source=="FILE" and not image.packed_file and not Path(bpy.path.abspath(image.filepath)).exists():
+            dangling.append((image.name,image.users,image.filepath))
+    if dangling:
+        raise ValueError("Unresolved source images after 1K remapping: "+repr(dangling[:12]))
     bpy.ops.file.pack_all()
     scene_file=OUT/"blizniak_salon_A_polyhaven_CC0.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(scene_file))
