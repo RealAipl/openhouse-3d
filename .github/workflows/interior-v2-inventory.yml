@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - .github/workflows/interior-v2-inventory.yml
+      - tools/interior_v2_inventory.py
 
 permissions:
   contents: read
