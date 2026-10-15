@@ -1,0 +1,74 @@
+name: LUXORIA - V3 genuine new home material pack CC0
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/luxoria-home-finish-v3-release.yml
+
+permissions:
+  contents: write
+
+jobs:
+  collect-v3:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare official CC0 downloader
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install pillow
+          python -m py_compile tools/luxoria_home_assets_v3.py
+      - name: Download additional household finishing materials excluding V1 and V2 IDs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/luxoria_home_assets_v3.py --mode build
+      - name: Verify exact inventory, source links, textures and preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,zipfile,io
+          from pathlib import Path
+          from PIL import Image
+          p=Path('tmp/LUXORIA_Dom_Wnetrza_V3_CC0_Materialy_I_Obiekty.zip')
+          assert p.is_file() and p.stat().st_size>150_000_000
+          assert p.stat().st_size<2_100_000_000, "GitHub release file > 2GiB"
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              m=json.loads(z.read('MANIFEST_V3.json'))
+              assert m['license']=='CC0 1.0'
+              assert m['duplicates_v1_v2']==0
+              assert len(m['assets'])==sum(m['counts'].values())
+              assert m['counts']['new_ambientCG_PBR']>=175
+              assert sum(z.filename.endswith('.zip') for z in z.infolist())>=175
+              assert all(a['source'].startswith('https://') for a in m['assets'])
+              im=Image.open(io.BytesIO(z.read('ZOBACZ_ZASOBY_V3.jpg')))
+              assert im.width>=1400 and im.height>=600
+              print('PASS V3',m['counts'],'ZIP MB',round(p.stat().st_size/1048576,1))
+          PY
+      - name: Publish single direct CC0 Home V3 ZIP and real preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          cp tmp/LUXORIA_Dom_Wnetrza_V3_CC0_Materialy_I_Obiekty.zip release/
+          cp tmp/luxoria-home-extra-v3/MANIFEST_V3.json release/
+          cp tmp/luxoria-home-extra-v3/ZOBACZ_ZASOBY_V3.jpg release/
+          tag=luxoria-home-interiors-cc0-v3
+          gh release create "$tag" \
+            release/LUXORIA_Dom_Wnetrza_V3_CC0_Materialy_I_Obiekty.zip \
+            release/MANIFEST_V3.json \
+            release/ZOBACZ_ZASOBY_V3.jpg \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "LUXORIA V3 — kolejna biblioteka CC0 do domów (bez duplikatów V1/V2)" \
+            --notes "Oryginalne nowe materiały wykończeniowe PBR ambientCG i ewentualne nowe modele Poly Haven. Materiały CC0 1.0, komercyjne zastosowania dozwolone. Dokładną liczbę i typ zasobów potwierdza MANIFEST_V3.json. Nie reklamujemy materiałów jako mebli 3D. PBR 1K JPG z mapami normalnych/roughness, także plikami .blend w wewnętrznych archiwach. Źródła: https://ambientcg.com oraz https://polyhaven.com. Bez jakiejkolwiek zmiany produkcyjnej LUXORIA."
+          gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets,url,name
