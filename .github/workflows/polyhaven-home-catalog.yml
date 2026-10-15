@@ -1,0 +1,28 @@
+name: Poly Haven - CC0 realistic household pack catalogue
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/polyhaven-home-catalog.yml
+
+permissions:
+  contents: read
+
+jobs:
+  catalogue:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - name: Discover realistic home assets from Poly Haven
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/polyhaven_home_catalog.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: polyhaven-home-cc0-catalogue
+          path: tmp/polyhaven_home_candidates.json
+          retention-days: 4
+          if-no-files-found: error
