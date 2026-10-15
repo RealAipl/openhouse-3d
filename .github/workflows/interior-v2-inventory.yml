@@ -1,0 +1,19 @@
+name: LUXORIA - research new interior assets without duplicates
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/interior-v2-inventory.yml
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect new legitimate CC0 interior sources
+        run: python -u tools/interior_v2_inventory.py
