@@ -1,0 +1,80 @@
+name: LUXORIA - build and release new CC0 Home Interior V2
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/luxoria-home-extra-v2-release.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build-v2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install image-processing dependency and validate downloader
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install Pillow
+          python -m py_compile tools/luxoria_home_assets_v2.py
+
+      - name: Build genuine home models and finishes not present in V1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/luxoria_home_assets_v2.py --mode build
+
+      - name: Inspect ZIP, source, PBR map count, licenses, thumbnail sheet
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json, zipfile, io
+          from PIL import Image
+          p=Path('tmp/LUXORIA_Dom_Wnetrza_V2_CC0_Dodatkowe_Zasoby.zip')
+          assert p.exists() and p.stat().st_size>100_000_000
+          assert p.stat().st_size<2_100_000_000
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              m=json.loads(z.read('MANIFEST_V2.json'))
+              c=m['counts']
+              assert c['new_3d_models']>=13
+              assert c['new_polyhaven_PBR']>=45
+              assert c['new_ambientCG_PBR']>=55
+              assert m['duplicates_v1']==0 and m['license']=='CC0 1.0'
+              assert len(m['assets'])==sum(c.values())
+              assert all(x['source'].startswith('https://') for x in m['assets'])
+              with Image.open(io.BytesIO(z.read('ZOBACZ_NOWE_ZASOBY.jpg'))) as im:
+                  assert im.width>=1400 and im.height>=650
+                  print('Contact sheet',im.size)
+          print('CONFIRMED',c,'SIZE',p.stat().st_size)
+          PY
+
+      - name: Publish single direct download ZIP as GitHub Release
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          cp tmp/LUXORIA_Dom_Wnetrza_V2_CC0_Dodatkowe_Zasoby.zip release/
+          cp tmp/luxoria-home-extra-v2/ZOBACZ_NOWE_ZASOBY.jpg release/
+          cp tmp/luxoria-home-extra-v2/MANIFEST_V2.json release/
+          tag='luxoria-home-interiors-cc0-v2'
+          gh release create "$tag" \
+            release/LUXORIA_Dom_Wnetrza_V2_CC0_Dodatkowe_Zasoby.zip \
+            release/ZOBACZ_NOWE_ZASOBY.jpg \
+            release/MANIFEST_V2.json \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title 'LUXORIA - dodatkowe zasoby do wnetrz V2 (nowe modele i PBR, CC0)' \
+            --notes 'Darmowa uzupełniająca biblioteka LUXORIA (bez duplikatów V1): autentyczne modele 3D Poly Haven oraz kompletne materiały PBR Poly Haven i ambientCG. Użycie komercyjne dozwolone: CC0 1.0. Źródła: https://polyhaven.com i https://ambientcg.com. Podgląd to rzeczywiste miniatury zasobów, a nie fotorealistyczne wizualizacje gotowego mieszkania. Surowa biblioteka wymaga świadomego doboru materiałów, modeli, światła i skali w Blenderze.'
+          gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets,name,url
