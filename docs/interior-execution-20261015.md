@@ -9,3 +9,5 @@ Wysokość sufitu 2.69 pozostaje założeniem - brak przekroju.
 Weryfikacja: Blender 5.2.1 w chmurze, mały render CPU szablonu wykonany poprawnie.
 
 Kontrola: obrysy ścian działowych zostały wyeksportowane z rzeczywistej sceny i nałożone na oba oryginalne rzuty w plikach dostarczanych prywatnie. 57 testów repozytorium i Ruff przechodzą. Scena zawiera 24 pomieszczenia i 28 kamer wnętrz; tekstury spakowane; oryginalny plik salonu zachowany.
+
+Dodatkowa kontrola: pełny pion instalacyjny zamknięty w czterech lokalach; 40 grup modeli mieści się w obrysach przypisanych pomieszczeń. Sprawdzono 86 spakowanych obrazów (brak brakujących). Pierwsze dwa kadry nie widzą zmienionego pionu (po 5184 promienie, 0 trafień), więc nie były niepotrzebnie renderowane ponownie. CI GitHub dla ecba381 zakończyło się sukcesem.

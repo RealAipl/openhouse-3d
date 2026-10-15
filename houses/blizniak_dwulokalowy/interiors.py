@@ -44,6 +44,9 @@ def _partitions(M):
                 _local_vertical(walls, seg, 1.82, 7.77, 9.05, z0, z1, (7.98, 8.68))
             else:
                 _local_horizontal(walls, seg, 0, 3.80, 7.72, z0, z1, (2.37, 3.17))
+            # The hatched installation riser is solid, keeping the hall 1.57 m clear.
+            ca, cb = seg_interval(seg, 1.77, 2.23)
+            walls.box(ca, cb, 7.03, 7.67, z0, z1)
             walls.build("BLI_Partitions_" + seg + "_" + level, [M["party"]])
 
 

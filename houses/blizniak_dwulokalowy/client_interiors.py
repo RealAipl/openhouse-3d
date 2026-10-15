@@ -569,7 +569,7 @@ def build():
            'source_conflict':'Upper living label 4.14 vs dimension chain 4.54 and schedule 33.32; chose 4.54',
            'inferred':['2.69 m ceiling height - no section provided','furnishings, finishes, light fixtures are design proposals','raster tracing of positions, not CAD survey'],
            'models_used':len(RECEIPTS),'mesh_objects':len([o for o in scene.objects if o.type=='MESH']),
-           'blender':bpy.app.version_string,'source_commit':'c3d3ab3c4602e76e214c0ac5dc6abbf2340a21d9'}
+           'blender':bpy.app.version_string,'base_repository_commit':'c3d3ab3c4602e76e214c0ac5dc6abbf2340a21d9'}
     (OUT/'KONTROLA_GEOMETRII.json').write_text(json.dumps(audit,indent=2,ensure_ascii=False))
     print('BUILD_OK',audit['mesh_objects'],flush=True)
 
@@ -585,6 +585,7 @@ def render(names, scale=100, samples=128):
     results=[]
     for name in names:
         scene.camera=bpy.data.objects['A_'+name]
+        scene.cycles.time_limit = (180 if name.startswith(('11_', '12_')) else 420) if scale == 100 else 55
         scene.render.filepath=str(folder/(name+'.png'))
         # One view should not change the noise/lighting balance of other units.
         level=next(v[1] for v in VIEWS if v[0]==name)
