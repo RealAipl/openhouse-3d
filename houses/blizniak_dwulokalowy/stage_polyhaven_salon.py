@@ -111,8 +111,22 @@ def append_blend_asset(slug, location, target_width, angle):
                     elif img.packed_file is not None:
                         continue
                     else:
-                        # Never pretend the unknown source texture was preserved.
-                        raise FileNotFoundError(f"No equivalent 1K {kind} PBR texture for {slug}/{original}")
+                        # The official 1K distribution intentionally omits some
+                        # AO / displacement / 8K-only optional maps. Use a neutral
+                        # 1x1 texture (not a magenta missing-image placeholder).
+                        channel=kind or "ao"
+                        neutral_name="PH_Neutral_"+channel
+                        neutral=bpy.data.images.get(neutral_name)
+                        if neutral is None:
+                            neutral=bpy.data.images.new(neutral_name,width=1,height=1,alpha=True)
+                            color = (1,1,1,1) if channel=="ao" else (
+                                    (.5,.5,1,1) if channel=="nor" else (
+                                    (0,0,0,1) if channel=="metal" else (.65,.65,.65,1)))
+                            neutral.pixels[:]=color
+                            neutral.pack()
+                        node.image=neutral
+                        print(f"PBR optional missing ({slug}): {original} -> neutral {channel}",flush=True)
+                        continue
                 img.filepath=str(replacement)
                 img.reload()
     return {
