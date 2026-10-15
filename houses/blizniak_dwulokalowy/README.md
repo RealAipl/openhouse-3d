@@ -6,6 +6,7 @@ Aktualna praca obejmuje wyłącznie wnętrza, na podstawie oryginalnego czterost
 
 - Segmenty A/B w odbiciu lustrzanym; dwa niezależne lokale na każdym poziomie, cztery łącznie.
 - 24 pomieszczenia; osobne kolekcje wyposażenia czterech lokali.
+- 16 otwartych skrzydeł drzwi wewnętrznych z ościeżnicami i klamkami.
 - Dwie sypialnie w lokalu parterowym, jedna w lokalu piętrowym.
 - Brak schodów wewnętrznych: wejścia na piętro znajdują się z boku budynku.
 - Reprezentatywne kamery dla A oraz ich odpowiedniki dla B; nie powielamy identycznych renderów.

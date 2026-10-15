@@ -44,8 +44,10 @@ VANITY = 'basin-90-freestanding-bathroom-vanity-c58c9ba0'
 
 def collection(name):
     if name not in COLLECTIONS:
-        c = bpy.data.collections.new(name)
-        bpy.context.scene.collection.children.link(c)
+        c = bpy.data.collections.get(name)
+        if c is None:
+            c = bpy.data.collections.new(name)
+            bpy.context.scene.collection.children.link(c)
         COLLECTIONS[name] = c
     return COLLECTIONS[name]
 
@@ -237,6 +239,36 @@ def door_vertical(u,ya,yb,angle=0):
         box('Open door leaf',(u+.34,(ya+yb)/2,1.02),(.037,yb-ya-.025,1.97),'white',.005,angle)
 
 
+def open_leaf(name, loc, width=.78, along='X'):
+    dims = (width, .038, 1.96) if along == 'X' else (.038, width, 1.96)
+    box(name + ' open door leaf', (loc[0], loc[1], 1.01), dims, 'cabinet', .004)
+    if along == 'X':
+        tube(name + ' lever', (loc[0]+width/2-.12,loc[1]+.035,1.02),
+             (loc[0]+width/2-.23,loc[1]+.035,1.02), .009)
+    else:
+        tube(name + ' lever', (loc[0]+.035,loc[1]+width/2-.12,1.02),
+             (loc[0]+.035,loc[1]+width/2-.23,1.02), .009)
+
+
+def finish_doors():
+    # Bathroom opens into the hall; bedroom leaf opens into the bedroom.
+    open_leaf('Bathroom', (2.58,6.63))
+    open_leaf('Bedroom', (4.25,5.83))
+    if LEVEL == 'ground':
+        open_leaf('Guest room', (2.15,4.13))
+        open_leaf('Utility', (2.17,8.68), .68)
+        open_leaf('Vestibule', (2.10,8.12), along='Y')
+        door_vertical(1.82,7.98,8.68)
+    else:
+        open_leaf('Vestibule', (3.17,8.12), along='Y')
+    # Casing for the vestibule threshold, as shown on the drawing.
+    a,b=(2.10,2.90) if LEVEL=='ground' else (2.37,3.17)
+    for yy in (7.654,7.786):
+        for u in (a-.025,b+.025):
+            box('Vestibule door casing',(u,yy,1.025),(.06,.02,2.05),'white',.003)
+        box('Vestibule door casing',((a+b)/2,yy,2.035),(b-a+.10,.02,.06),'white',.003)
+
+
 def kitchen():
     # L plan: the drawing places worktops against the rear partition and party wall.
     for i in range(5):
@@ -399,7 +431,9 @@ def hall(vest=False):
             u=2.20
             box('Entrance bench',(3.53,8.42,.43),(.37,.84,.12),'oak',.014)
             box('Entrance mirror',(3.779,8.45,1.44),(.015,.71,1.12),'mirror',.08)
-            for yy in (8.08,8.56):box('White coat cupboard',(2.06,yy,1.25),(.36,.474,2.43),'cabinet',.005)
+            # Keep the utility doorway on the left completely clear.
+            box('Coat cupboard above bench',(3.53,8.42,2.07),(.37,.84,.76),'cabinet',.005)
+            box('Entrance mat',(2.80,8.40,.039),(.67,.48,.016),'rug',.02)
         downlights(bounds)
         area('Vestibule warm fill',((bounds[0]+bounds[1])/2,8.40,2.58),(u,8.3,.4),38,.8,(1,.96,.91))
     else:
@@ -521,6 +555,7 @@ def build():
             door_vertical(2.18,5.83,6.63)
             door_vertical(3.85,5.83,6.63)
             if LEVEL=='ground':door_vertical(2.55,3.33,4.13)
+            finish_doors()
     # Remove unused old scene data, keeping only materials and images with users.
     for mesh in list(bpy.data.meshes):
         if mesh.users==0:bpy.data.meshes.remove(mesh)

@@ -20,6 +20,8 @@ units={key:len(bpy.data.collections['Lokal_'+key].objects) for key in ['A_ground
 assert min(units.values())>100
 cameras=[o for o in scene.objects if o.type=='CAMERA']
 assert len(cameras)==28
+leaves=[o for o in scene.objects if 'open door leaf' in o.name]
+assert len(leaves)==16, len(leaves)
 assert all(not any(s in o.name for s in ['hero','exterior','front_elevation']) for o in cameras)
 # Directly test camera origins against the usable room rectangle.
 checks=[]
@@ -58,6 +60,12 @@ for level in ['ground','upper']:
     a={tuple(round(v,5) for v in xy) for poly in polys['A_'+level] for xy in poly}
     b={(-round(x,5),round(y,5)) for poly in polys['B_'+level] for x,y in poly}
     assert a==b,level
-result={'reopened_blend':True,'mirror_walls_match':True,'asset_bounds_checks':asset_bounds,'packed_images':sum(bool(i.packed_file) for i in bpy.data.images),'missing_images':missing,'unit_object_counts':units,'cameras':checks,'wall_footprints':polys,'wall_materials':list({m.name for o in scene.objects if o.name.startswith('BLI_') for m in o.data.materials}),'original_salon_sha256':hashlib.sha256((ROOT/'tmp/existing/salon_v4_editable.blend').read_bytes()).hexdigest(),'sha256_blend':hashlib.sha256((OUT/'Wnetrza_4_lokale.blend').read_bytes()).hexdigest()}
+result={'reopened_blend':True,'mesh_object_count':sum(o.type=='MESH' for o in scene.objects),'open_internal_door_leaves':len(leaves),'mirror_walls_match':True,'asset_bounds_checks':asset_bounds,'packed_images':sum(bool(i.packed_file) for i in bpy.data.images),'missing_images':missing,'unit_object_counts':units,'cameras':checks,'wall_footprints':polys,'wall_materials':list({m.name for o in scene.objects if o.name.startswith('BLI_') for m in o.data.materials}),'original_salon_sha256':hashlib.sha256((ROOT/'tmp/existing/salon_v4_editable.blend').read_bytes()).hexdigest(),'sha256_blend':hashlib.sha256((OUT/'Wnetrza_4_lokale.blend').read_bytes()).hexdigest()}
 (OUT/'KONTROLA_PLIKU_BLEND.json').write_text(json.dumps(result,indent=2))
+geometry_file=OUT/'KONTROLA_GEOMETRII.json'
+if geometry_file.exists():
+    geometry=json.loads(geometry_file.read_text())
+    geometry['mesh_objects']=result['mesh_object_count']
+    geometry['modeled_open_internal_door_leaves']=len(leaves)
+    geometry_file.write_text(json.dumps(geometry,indent=2,ensure_ascii=False))
 print('PASS: packed scene reopened; 4 furnished units; 28 room-safe cameras; original delivery retained.')
