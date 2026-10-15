@@ -1,0 +1,69 @@
+name: LUXORIA - publish full CC0 mega ZIP direct download
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/publish-luxoria-cc0-megapack.yml
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover previously validated Poly Haven CC0 megapack
+        uses: actions/download-artifact@v4
+        with:
+          name: LUXORIA-Interior-MegaPack-CC0
+          run-id: 38680174529
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: existing-verified-artifact
+
+      - name: Verify assets and name complete release files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import zipfile,json,shutil
+          from pathlib import Path
+          root=Path('existing-verified-artifact')
+          candidates=list(root.rglob('luxoria-interior-megapack-CC0.zip'))
+          assert len(candidates)==1, candidates
+          source=candidates[0]
+          with zipfile.ZipFile(source) as z:
+              assert z.testzip() is None
+              m=json.loads(z.read('manifest.json'))
+              assert m['license']=='CC0 1.0'
+              assert m['models']>=55 and m['pbr_materials']>=75
+              assert sum(x.endswith('.blend') for x in z.namelist())==m['models']+m['pbr_materials']
+              print('Verified for permanent free download:',m['models'],'real models',m['pbr_materials'],'real PBR Blender materials')
+              out=Path('for-release');out.mkdir(exist_ok=True)
+              z.extract('ZOBACZ_ZAWARTOSC.jpg',out)
+              z.extract('manifest.json',out)
+              (out/'ZOBACZ_ZAWARTOSC.jpg').rename(out/'LUXORIA_Zobacz_Modele_i_Materialy.jpg')
+              (out/'manifest.json').rename(out/'LUXORIA_Manifest_Licencje_i_Zrodla.json')
+          shutil.copyfile(source, 'for-release/LUXORIA_Interior_MegaPack_178_Zasobow_CC0.zip')
+          PY
+
+      - name: Publish one-click ZIP on public GitHub Releases
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag='luxoria-interior-megapack-cc0-v1'
+          notes=$'Kompletna, darmowa biblioteka realistycznych wnętrz 3D dla Blender/OpenHouse. 89 plików modeli .blend, 89 materiałów .blend PBR z zależnymi mapami tekstur, manifest źródeł/licencji i podgląd autentycznych miniatur Poly Haven. Wszystkie zasoby CC0, do zastosowań komercyjnych. Powered by Poly Haven: https://polyhaven.com. Zasoby nie oznaczają gotowego urządzonego domu ani zweryfikowanej dokumentacji architektonicznej.'
+          gh release create "$tag" \
+            'for-release/LUXORIA_Interior_MegaPack_178_Zasobow_CC0.zip#Pobierz kompletny ZIP 178 zasobów CC0' \
+            'for-release/LUXORIA_Zobacz_Modele_i_Materialy.jpg#Prawdziwy podgląd zasobów' \
+            'for-release/LUXORIA_Manifest_Licencje_i_Zrodla.json#Manifest licencji i źródeł' \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title 'LUXORIA - darmowa fotorealistyczna biblioteka wnętrz CC0 (178 zasobów)' \
+            --notes "$notes"
+          gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets,name,url
