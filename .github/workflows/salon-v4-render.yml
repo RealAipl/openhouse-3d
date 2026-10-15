@@ -1,0 +1,80 @@
+name: Salon V4 - single premium Cycles still
+# Expensive render is manual only. The existing 1080p deliverables were
+# already produced; changing workflow/docs must not launch another CPU render.
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: salon-v4-premium-single
+  cancel-in-progress: false
+jobs:
+  single-still:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install and check project
+        run: |
+          python -m pip install -e '.[dev]'
+          python -m pytest -q
+          python -m ruff check .
+          echo "ARCHVIZ_PYTHON=$(command -v python)" >> "$GITHUB_ENV"
+      - name: Prepare audited V4 models and selected V1-V3 PBR
+        run: python -u tools/prepare_salon_v4.py
+      - name: Cross-check actual V1-V3 archives for identical model files
+        run: python -u tools/crosscheck_salon_v4.py
+      - name: Download official Blender
+        run: |
+          curl --fail --retry 3 -L --silent --show-error https://download.blender.org/release/Blender5.2/blender-5.2.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+          echo "BLENDER=$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" >> "$GITHUB_ENV"
+      - name: Small CPU template compatibility render
+        run: |
+          "$BLENDER" -b --python-exit-code 1 --python run.py -- --house _template --cam hero --samples 2 --scale 10 --no-polish --device CPU
+      - name: Build existing concept without rendering
+        run: |
+          "$BLENDER" -b --python-exit-code 1 --python run.py -- --house blizniak_dwulokalowy --save --norender --no-polish --device CPU
+      - name: Stage and render exactly one 1080p living room
+        run: |
+          "$BLENDER" -b houses/blizniak_dwulokalowy/output/blizniak_dwulokalowy.blend --python-exit-code 1 --python houses/blizniak_dwulokalowy/stage_salon_v4.py
+      - name: Reopen packed editable scene
+        run: |
+          "$BLENDER" -b houses/blizniak_dwulokalowy/output/salon_v4/salon_v4_editable.blend --python-exit-code 1 --python tools/check_salon_v4_delivery.py
+          python tools/package_salon_v4.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: salon-v4-single-still-and-editable-scene
+          path: |
+            houses/blizniak_dwulokalowy/output/salon_v4/*.png
+            houses/blizniak_dwulokalowy/output/salon_v4/*.jpg
+            houses/blizniak_dwulokalowy/output/salon_v4/*.blend
+            houses/blizniak_dwulokalowy/output/salon_v4/*.json
+            houses/blizniak_dwulokalowy/output/salon_v4/*.md
+            houses/blizniak_dwulokalowy/output/salon_v4/SHA256SUMS.txt
+          retention-days: 7
+          if-no-files-found: error
+      - name: Publish explicit files and permanent visual preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          OUT=houses/blizniak_dwulokalowy/output/salon_v4
+          gh release upload salon-v4-premium-20261015 "$OUT/v4_audit.json" --clobber
+          gh release upload salon-v4-premium-20261015 "$OUT/salon_v4_1920x1080.png" "$OUT/salon_v4_preview.jpg" "$OUT/salon_v4_editable.blend" "$OUT/asset_report.json" "$OUT/prepared_assets.json" "$OUT/RAPORT.md" "$OUT/SHA256SUMS.txt" --clobber
+          mkdir -p docs/assets/salon-v4
+          cp "$OUT/salon_v4_preview.jpg" "$OUT/asset_report.json" "$OUT/RAPORT.md" docs/assets/salon-v4/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/assets/salon-v4/
+          if ! git diff --cached --quiet; then
+            git commit -m "Record actual V4 salon render preview and asset receipt"
+            git push origin "HEAD:refs/heads/salon-v4-premium-20261015"
+          else
+            echo "Already committed, nothing to push"
+          fi
+          gh release edit salon-v4-premium-20261015 --notes-file "$OUT/RAPORT.md"

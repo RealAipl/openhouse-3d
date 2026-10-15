@@ -1,0 +1,774 @@
+{
+  "room": "A_upper_5",
+  "image": "salon_v4_1920x1080.png",
+  "scene": "salon_v4_editable.blend",
+  "source_commit": "f8240fee02ea8b6cb714858da75452f596e08740",
+  "models": [
+    {
+      "id": "haven-224-oatmeal-two-seat-sofa-40262c27",
+      "instance": "V4_Asset_haven-224-oatmeal-two-seat-sofa-40262c27",
+      "provider": "Innerscene",
+      "author": "Innerscene",
+      "source": "https://www.innerscene.com/tools/library/3d-parts/haven-224-oatmeal-two-seat-sofa-40262c27",
+      "license": "CC0-1.0",
+      "sha256": "acad7fd3d9431929c303b1ae5cd476d7a108ce352a99ddf40e4e78ea7b9f2643",
+      "source_triangles": 96220,
+      "imported_meshes": 27,
+      "embedded_images": 6,
+      "original_dimensions_m": [
+        2.2749998569488525,
+        0.925000011920929,
+        0.9289910197257996
+      ],
+      "uniform_scale": 1.0021978652156283,
+      "world_bounds_m": [
+        [
+          -7.239999771118164,
+          3.556483507156372,
+          2.9600000381469727
+        ],
+        [
+          -4.960000038146973,
+          4.483516693115234,
+          3.8910326957702637
+        ]
+      ],
+      "rotation_z_degrees": 0
+    },
+    {
+      "id": "ember-leather-and-walnut-lounge-chair-9b9f3689",
+      "instance": "V4_Asset_ember-leather-and-walnut-lounge-chair-9b9f3689",
+      "provider": "Innerscene",
+      "author": "Innerscene",
+      "source": "https://www.innerscene.com/tools/library/3d-parts/ember-leather-and-walnut-lounge-chair-9b9f3689",
+      "license": "CC0-1.0",
+      "sha256": "192a6a36b1d6df935ee27e435f5ce86ae6afa280ac797d9281bda58e5b3d4559",
+      "source_triangles": 55560,
+      "imported_meshes": 31,
+      "embedded_images": 6,
+      "original_dimensions_m": [
+        0.7910000085830688,
+        0.860601544380188,
+        0.9798392057418823
+      ],
+      "uniform_scale": 0.9993010187070704,
+      "world_bounds_m": [
+        [
+          -7.447176933288574,
+          1.0463947057724,
+          2.9600000381469727
+        ],
+        [
+          -6.301074028015137,
+          2.1703860759735107,
+          3.9391541481018066
+        ]
+      ],
+      "rotation_z_degrees": 125
+    },
+    {
+      "id": "trio-nesting-coffee-table-set-a1a295a4",
+      "instance": "V4_Asset_trio-nesting-coffee-table-set-a1a295a4",
+      "provider": "Innerscene",
+      "author": "Innerscene",
+      "source": "https://www.innerscene.com/tools/library/3d-parts/trio-nesting-coffee-table-set-a1a295a4",
+      "license": "CC0-1.0",
+      "sha256": "fa43e4161a4d2570a73c625a9d76278db25123970aef92d3e3e11d2cc67af77d",
+      "source_triangles": 13548,
+      "imported_meshes": 24,
+      "embedded_images": 6,
+      "original_dimensions_m": [
+        1.1410000324249268,
+        0.7379999756813049,
+        0.47200000286102295
+      ],
+      "uniform_scale": 0.9640665808415528,
+      "world_bounds_m": [
+        [
+          -6.433011054992676,
+          2.228729724884033,
+          2.9839999675750732
+        ],
+        [
+          -5.166989803314209,
+          3.023205280303955,
+          3.439039468765259
+        ]
+      ],
+      "rotation_z_degrees": 18
+    },
+    {
+      "id": "trace-180-walnut-sideboard-32858583",
+      "instance": "V4_Asset_trace-180-walnut-sideboard-32858583",
+      "provider": "Innerscene",
+      "author": "Innerscene",
+      "source": "https://www.innerscene.com/tools/library/3d-parts/trace-180-walnut-sideboard-32858583",
+      "license": "CC0-1.0",
+      "sha256": "11983868fd50b7293cbe2ccbc05b3ee726e08f51dfc9b178c617579b1cccff74",
+      "source_triangles": 18620,
+      "imported_meshes": 45,
+      "embedded_images": 3,
+      "original_dimensions_m": [
+        1.8200000524520874,
+        0.5170000195503235,
+        0.7829999923706055
+      ],
+      "uniform_scale": 0.9999999711801726,
+      "world_bounds_m": [
+        [
+          -3.1500000953674316,
+          4.141499996185303,
+          2.9600000381469727
+        ],
+        [
+          -1.3299999237060547,
+          4.6585001945495605,
+          3.743000030517578
+        ]
+      ],
+      "rotation_z_degrees": 0
+    },
+    {
+      "id": "span-225-extendable-dining-table-b5cc7e64",
+      "instance": "V4_Asset_span-225-extendable-dining-table-b5cc7e64",
+      "provider": "Innerscene",
+      "author": "Innerscene",
+      "source": "https://www.innerscene.com/tools/library/3d-parts/span-225-extendable-dining-table-b5cc7e64",
+      "license": "CC0-1.0",
+      "sha256": "a47f32641fabb733d60f17000bedabc929a52738b03adf1ac094bf65f34c5917",
+      "source_triangles": 11676,
+      "imported_meshes": 31,
+      "embedded_images": 6,
+      "original_dimensions_m": [
+        2.246000051498413,
+        0.8999999761581421,
+        0.7549999952316284
+      ],
+      "uniform_scale": 1.0017809209304864,
+      "world_bounds_m": [
+        [
+          -3.3908016681671143,
+          1.4749999046325684,
+          2.9600000381469727
+        ],
+        [
+          -2.4891984462738037,
+          3.7250001430511475,
+          3.7163445949554443
+        ]
+      ],
+      "rotation_z_degrees": 90
+    },
+    {
+      "id": "gather-dining-armchair-ee459660",
+      "instance": "V4_Asset_DiningChair_0",
+      "provider": "Innerscene",
+      "author": "Innerscene",
+      "source": "https://www.innerscene.com/tools/library/3d-parts/gather-dining-armchair-ee459660",
+      "license": "CC0-1.0",
+      "sha256": "54ef65bc02899e1b94d17e4d13720146cf61f6ca962d63d1c0591fb63e2d3532",
+      "source_triangles": 14976,
+      "imported_meshes": 15,
+      "embedded_images": 6,
+      "original_dimensions_m": [
+        0.6769999861717224,
+        0.6378889083862305,
+        1.033218264579773
+      ],
+      "uniform_scale": 1.004431335139668,
+      "world_bounds_m": [
+        [
+          -4.150357723236084,
+          1.6799999475479126,
+          2.9600000381469727
+        ],
+        [
+          -3.5096421241760254,
+          2.3600001335144043,
+          3.9977967739105225
+        ]
+      ],
+      "rotation_z_degrees": 90
+    },
+    {
+      "id": "gather-dining-armchair-ee459660",
+      "instance": "V4_Asset_DiningChair_1",
+      "provider": "Innerscene",
+      "author": "Innerscene",
+      "source": "https://www.innerscene.com/tools/library/3d-parts/gather-dining-armchair-ee459660",
+      "license": "CC0-1.0",
+      "sha256": "54ef65bc02899e1b94d17e4d13720146cf61f6ca962d63d1c0591fb63e2d3532",
+      "source_triangles": 14976,
+      "imported_meshes": 15,
+      "embedded_images": 6,
+      "original_dimensions_m": [
+        0.6769999861717224,
+        0.6378889083862305,
+        1.033218264579773
+      ],
+      "uniform_scale": 1.004431335139668,
+      "world_bounds_m": [
+        [
+          -4.150357723236084,
+          2.7799997329711914,
+          2.9600000381469727
+        ],
+        [
+          -3.5096421241760254,
+          3.4600000381469727,
+          3.9977967739105225
+        ]
+      ],
+      "rotation_z_degrees": 90
+    },
+    {
+      "id": "gather-dining-armchair-ee459660",
+      "instance": "V4_Asset_DiningChair_2",
+      "provider": "Innerscene",
+      "author": "Innerscene",
+      "source": "https://www.innerscene.com/tools/library/3d-parts/gather-dining-armchair-ee459660",
+      "license": "CC0-1.0",
+      "sha256": "54ef65bc02899e1b94d17e4d13720146cf61f6ca962d63d1c0591fb63e2d3532",
+      "source_triangles": 14976,
+      "imported_meshes": 15,
+      "embedded_images": 6,
+      "original_dimensions_m": [
+        0.6769999861717224,
+        0.6378889083862305,
+        1.033218264579773
+      ],
+      "uniform_scale": 1.004431335139668,
+      "world_bounds_m": [
+        [
+          -2.3703577518463135,
+          1.6799999475479126,
+          2.9600000381469727
+        ],
+        [
+          -1.7296421527862549,
+          2.3600001335144043,
+          3.9977967739105225
+        ]
+      ],
+      "rotation_z_degrees": -90
+    },
+    {
+      "id": "gather-dining-armchair-ee459660",
+      "instance": "V4_Asset_DiningChair_3",
+      "provider": "Innerscene",
+      "author": "Innerscene",
+      "source": "https://www.innerscene.com/tools/library/3d-parts/gather-dining-armchair-ee459660",
+      "license": "CC0-1.0",
+      "sha256": "54ef65bc02899e1b94d17e4d13720146cf61f6ca962d63d1c0591fb63e2d3532",
+      "source_triangles": 14976,
+      "imported_meshes": 15,
+      "embedded_images": 6,
+      "original_dimensions_m": [
+        0.6769999861717224,
+        0.6378889083862305,
+        1.033218264579773
+      ],
+      "uniform_scale": 1.004431335139668,
+      "world_bounds_m": [
+        [
+          -2.3703577518463135,
+          2.7799997329711914,
+          2.9600000381469727
+        ],
+        [
+          -1.7296421527862549,
+          3.4600000381469727,
+          3.9977967739105225
+        ]
+      ],
+      "rotation_z_degrees": -90
+    },
+    {
+      "id": "paper-column-paper-column-floor-lamp-3b5a06e7",
+      "instance": "V4_Asset_paper-column-paper-column-floor-lamp-3b5a06e7",
+      "provider": "Innerscene",
+      "author": "Innerscene",
+      "source": "https://www.innerscene.com/tools/library/3d-parts/paper-column-paper-column-floor-lamp-3b5a06e7",
+      "license": "CC0-1.0",
+      "sha256": "a3c1b37b9ac21632f294a100c52497616a26a9dee8246d57955cdc6d25d87a7d",
+      "source_triangles": 21200,
+      "imported_meshes": 30,
+      "embedded_images": 11,
+      "original_dimensions_m": [
+        0.3019999861717224,
+        0.3019999861717224,
+        1.1299999952316284
+      ],
+      "uniform_scale": 1.0000000457890006,
+      "world_bounds_m": [
+        [
+          -7.421000003814697,
+          2.9489998817443848,
+          2.9600000381469727
+        ],
+        [
+          -7.11899995803833,
+          3.250999927520752,
+          4.090000152587891
+        ]
+      ],
+      "rotation_z_degrees": 0
+    },
+    {
+      "id": "basket-woven-basket-pendant-baacdf33",
+      "instance": "V4_Asset_basket-woven-basket-pendant-baacdf33",
+      "provider": "Innerscene",
+      "author": "Innerscene",
+      "source": "https://www.innerscene.com/tools/library/3d-parts/basket-woven-basket-pendant-baacdf33",
+      "license": "CC0-1.0",
+      "sha256": "3a623d5de11b794d5b84d86f9338568c11f55e1a48a825cda085991c3e6b3cff",
+      "source_triangles": 20996,
+      "imported_meshes": 44,
+      "embedded_images": 7,
+      "original_dimensions_m": [
+        0.48299533128738403,
+        0.48299533128738403,
+        1.0544999837875366
+      ],
+      "uniform_scale": 0.9109818905023708,
+      "world_bounds_m": [
+        [
+          -3.1600000858306885,
+          2.379999876022339,
+          4.599999904632568
+        ],
+        [
+          -2.7200000286102295,
+          2.819999933242798,
+          5.5606303215026855
+        ]
+      ],
+      "rotation_z_degrees": 0
+    },
+    {
+      "id": "brass_vase_01",
+      "instance": "V4_Asset_brass_vase_01",
+      "provider": "Poly Haven",
+      "author": "Rico Cilliers",
+      "source": "https://polyhaven.com/a/brass_vase_01",
+      "license": "CC0-1.0",
+      "sha256": "a44722b012bb104dbe3fdb8847778cabbf67f63e533f3e3b940aeb1172fac52b",
+      "source_triangles": 21440,
+      "imported_meshes": 1,
+      "embedded_images": 3,
+      "original_dimensions_m": [
+        0.2273191511631012,
+        0.22731918096542358,
+        0.692471981048584
+      ],
+      "uniform_scale": 0.7918381512529685,
+      "world_bounds_m": [
+        [
+          -1.9500000476837158,
+          4.299999713897705,
+          3.74399995803833
+        ],
+        [
+          -1.7700001001358032,
+          4.480000019073486,
+          4.292325496673584
+        ]
+      ],
+      "rotation_z_degrees": 0
+    },
+    {
+      "id": "tea_set_01",
+      "instance": "V4_Asset_tea_set_01",
+      "provider": "Poly Haven",
+      "author": "James Ray Cock, Rico Cilliers, Jurita Burger",
+      "source": "https://polyhaven.com/a/tea_set_01",
+      "license": "CC0-1.0",
+      "sha256": "b5bd3483ad9fdb84b9302d3279457c6db46b4aead70ed088309fe6f2cb050f56",
+      "source_triangles": 40296,
+      "imported_meshes": 10,
+      "embedded_images": 3,
+      "original_dimensions_m": [
+        0.9184823036193848,
+        0.4838765859603882,
+        0.1649930477142334
+      ],
+      "uniform_scale": 0.6859141406616249,
+      "world_bounds_m": [
+        [
+          -3.2927610874176025,
+          2.369050979614258,
+          3.7183446884155273
+        ],
+        [
+          -2.6208338737487793,
+          2.8804750442504883,
+          3.8315155506134033
+        ]
+      ],
+      "rotation_z_degrees": 20
+    }
+  ],
+  "materials": [
+    {
+      "role": "walls",
+      "id": "PaintedPlaster003",
+      "library": "V3",
+      "source": "https://ambientcg.com/a/PaintedPlaster003",
+      "maps": {
+        "color": "tmp/salon-v4/materials/walls/PaintedPlaster003_1K-JPG_Color.jpg",
+        "rough": "tmp/salon-v4/materials/walls/PaintedPlaster003_1K-JPG_Roughness.jpg",
+        "normal": "tmp/salon-v4/materials/walls/PaintedPlaster003_1K-JPG_NormalGL.jpg"
+      },
+      "mapping_repeat_per_metre": 0.7,
+      "tint": [
+        0.95,
+        0.91,
+        0.82
+      ],
+      "normal_strength": 0.08,
+      "files": [
+        {
+          "file": "tmp/salon-v4/materials/walls/PaintedPlaster003.png",
+          "sha256": "6c94ae363afe3271d0c6a03c7003a928a9ee6df5ebbbb676b9163b2440fbc9cd",
+          "source_url": "https://ambientcg.com/get?file=PaintedPlaster003_1K-JPG.zip"
+        },
+        {
+          "file": "tmp/salon-v4/materials/walls/PaintedPlaster003_1K-JPG_Color.jpg",
+          "sha256": "6fbaa7e9a97914a691883e184fe5f9b75984fb771ba5d3577c3acff03d00ca66",
+          "source_url": "https://ambientcg.com/get?file=PaintedPlaster003_1K-JPG.zip"
+        },
+        {
+          "file": "tmp/salon-v4/materials/walls/PaintedPlaster003_1K-JPG_Displacement.jpg",
+          "sha256": "17347a159dd15aaa68a34f99255993e2cfc298889b39973e4f9bf5e4781f6009",
+          "source_url": "https://ambientcg.com/get?file=PaintedPlaster003_1K-JPG.zip"
+        },
+        {
+          "file": "tmp/salon-v4/materials/walls/PaintedPlaster003_1K-JPG_NormalDX.jpg",
+          "sha256": "a375f4775d510fb7bb2c94333738320f937c1f594f75c4dd87042cb51c65aebc",
+          "source_url": "https://ambientcg.com/get?file=PaintedPlaster003_1K-JPG.zip"
+        },
+        {
+          "file": "tmp/salon-v4/materials/walls/PaintedPlaster003_1K-JPG_NormalGL.jpg",
+          "sha256": "a5bdb83daeaaa621be31ee4afecbd93d121525cb2323d7f758d99fb0d08c9e1b",
+          "source_url": "https://ambientcg.com/get?file=PaintedPlaster003_1K-JPG.zip"
+        },
+        {
+          "file": "tmp/salon-v4/materials/walls/PaintedPlaster003_1K-JPG_Roughness.jpg",
+          "sha256": "c020bfddde6c821de0d309698c41661bfae9d711523525be1d37322e173bca25",
+          "source_url": "https://ambientcg.com/get?file=PaintedPlaster003_1K-JPG.zip"
+        }
+      ]
+    },
+    {
+      "role": "floor",
+      "id": "wood_floor",
+      "library": "V2",
+      "source": "https://polyhaven.com/a/wood_floor",
+      "maps": {
+        "color": "tmp/salon-v4/materials/floor/wood_floor_diff_1k.jpg",
+        "rough": "tmp/salon-v4/materials/floor/wood_floor_rough_1k.exr",
+        "normal": "tmp/salon-v4/materials/floor/wood_floor_nor_gl_1k.exr"
+      },
+      "mapping_repeat_per_metre": 0.45,
+      "tint": null,
+      "normal_strength": 0.22,
+      "files": [
+        {
+          "file": "tmp/salon-v4/materials/floor/wood_floor_diff_1k.jpg",
+          "sha256": "2a1c07687b6dbb214c4b9213739c6d92d425f1f0fc8ab3ac157f105d78240789",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_floor/wood_floor_diff_1k.jpg"
+        },
+        {
+          "file": "tmp/salon-v4/materials/floor/wood_floor_disp_1k.png",
+          "sha256": "f35001a44d5241bee731a49ec3af540c98ff57ba9a423d71104e9c575dce8ef1",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_floor/wood_floor_disp_1k.png"
+        },
+        {
+          "file": "tmp/salon-v4/materials/floor/wood_floor_nor_gl_1k.exr",
+          "sha256": "f9d3d92d51a62f8c9264f47e832440ed2b53e796306c1d568f5219ac30d35c50",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/exr/1k/wood_floor/wood_floor_nor_gl_1k.exr"
+        },
+        {
+          "file": "tmp/salon-v4/materials/floor/wood_floor_rough_1k.exr",
+          "sha256": "6294b3cb56a7ae8bda1967bc9b33cfddd42d675ee08d1b31d911ac363124d126",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/exr/1k/wood_floor/wood_floor_rough_1k.exr"
+        }
+      ]
+    },
+    {
+      "role": "walnut",
+      "id": "american_walnut_veneer",
+      "library": "V2",
+      "source": "https://polyhaven.com/a/american_walnut_veneer",
+      "maps": {
+        "color": "tmp/salon-v4/materials/walnut/american_walnut_veneer_diff_1k.jpg",
+        "rough": "tmp/salon-v4/materials/walnut/american_walnut_veneer_rough_1k.exr",
+        "normal": "tmp/salon-v4/materials/walnut/american_walnut_veneer_nor_gl_1k.exr"
+      },
+      "mapping_repeat_per_metre": 0.8,
+      "tint": null,
+      "normal_strength": 0.2,
+      "files": [
+        {
+          "file": "tmp/salon-v4/materials/walnut/american_walnut_veneer_ao_1k.jpg",
+          "sha256": "757d3d8147e30c6cd67c31cb6bfd17610df3adc3d8abeabda9a6f8accb79842e",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/american_walnut_veneer/american_walnut_veneer_ao_1k.jpg"
+        },
+        {
+          "file": "tmp/salon-v4/materials/walnut/american_walnut_veneer_diff_1k.jpg",
+          "sha256": "10d983003bb686db4af3d35d91197fdb6144dcd15d3dcea2ef315600f51b1af5",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/american_walnut_veneer/american_walnut_veneer_diff_1k.jpg"
+        },
+        {
+          "file": "tmp/salon-v4/materials/walnut/american_walnut_veneer_disp_1k.png",
+          "sha256": "9ec562ab81b5841b5e1f3e7948327d0a2bf88aa00f2ba492a7c09ddeb2eda92d",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/american_walnut_veneer/american_walnut_veneer_disp_1k.png"
+        },
+        {
+          "file": "tmp/salon-v4/materials/walnut/american_walnut_veneer_nor_gl_1k.exr",
+          "sha256": "757300c89341e6bcd5c6be494a551e5023523993c523f7e560bcdd1e3b900506",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/exr/1k/american_walnut_veneer/american_walnut_veneer_nor_gl_1k.exr"
+        },
+        {
+          "file": "tmp/salon-v4/materials/walnut/american_walnut_veneer_rough_1k.exr",
+          "sha256": "1d7f7161805c0b97cb1f5a9f1c8775023d38ac7e5d2ba57f57fc0c89c5331d9c",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/exr/1k/american_walnut_veneer/american_walnut_veneer_rough_1k.exr"
+        }
+      ]
+    },
+    {
+      "role": "rug",
+      "id": "Carpet003",
+      "library": "V3",
+      "source": "https://ambientcg.com/a/Carpet003",
+      "maps": {
+        "color": "tmp/salon-v4/materials/rug/Carpet003_1K-JPG_Color.jpg",
+        "rough": "tmp/salon-v4/materials/rug/Carpet003_1K-JPG_Roughness.jpg",
+        "normal": "tmp/salon-v4/materials/rug/Carpet003_1K-JPG_NormalGL.jpg"
+      },
+      "mapping_repeat_per_metre": 2,
+      "tint": [
+        0.8,
+        0.73,
+        0.61
+      ],
+      "normal_strength": 0.35,
+      "files": [
+        {
+          "file": "tmp/salon-v4/materials/rug/Carpet003.png",
+          "sha256": "1cd11294a544ffe55676948684a11dd220acd1a3982133b5c363f4c4d2b23119",
+          "source_url": "https://ambientcg.com/get?file=Carpet003_1K-JPG.zip"
+        },
+        {
+          "file": "tmp/salon-v4/materials/rug/Carpet003_1K-JPG_AmbientOcclusion.jpg",
+          "sha256": "9b70fd89ac01c0cd4f9627423ede389bcb21fb6ac0ba09f98de6e29ee33f6dd1",
+          "source_url": "https://ambientcg.com/get?file=Carpet003_1K-JPG.zip"
+        },
+        {
+          "file": "tmp/salon-v4/materials/rug/Carpet003_1K-JPG_Color.jpg",
+          "sha256": "06dd773cfc41d7a1f991833e5154f0436839c292960e168a6742176567505901",
+          "source_url": "https://ambientcg.com/get?file=Carpet003_1K-JPG.zip"
+        },
+        {
+          "file": "tmp/salon-v4/materials/rug/Carpet003_1K-JPG_Displacement.jpg",
+          "sha256": "1c5522c26cf306c4b4dc7174a30a790cfb6404db1533a70435be1efb46ed8f31",
+          "source_url": "https://ambientcg.com/get?file=Carpet003_1K-JPG.zip"
+        },
+        {
+          "file": "tmp/salon-v4/materials/rug/Carpet003_1K-JPG_NormalDX.jpg",
+          "sha256": "34a5f97d764e7e286d34e6e96e0e12c32d7fd6d84595703e20bc7df028d08727",
+          "source_url": "https://ambientcg.com/get?file=Carpet003_1K-JPG.zip"
+        },
+        {
+          "file": "tmp/salon-v4/materials/rug/Carpet003_1K-JPG_NormalGL.jpg",
+          "sha256": "2078cec7e2c7bb4f5888870f23f273ea6e607955b6fa87ae9066e982b3a3dc89",
+          "source_url": "https://ambientcg.com/get?file=Carpet003_1K-JPG.zip"
+        },
+        {
+          "file": "tmp/salon-v4/materials/rug/Carpet003_1K-JPG_Roughness.jpg",
+          "sha256": "c50a1ce6d842ef4bc869109b92c2ae287a05f5682529b0ec7c151f46f5a04374",
+          "source_url": "https://ambientcg.com/get?file=Carpet003_1K-JPG.zip"
+        }
+      ]
+    },
+    {
+      "role": "curtains",
+      "id": "rough_linen",
+      "library": "V1",
+      "source": "https://polyhaven.com/a/rough_linen",
+      "maps": {
+        "color": "tmp/salon-v4/materials/curtains/rough_linen_diff_1k.jpg",
+        "rough": "tmp/salon-v4/materials/curtains/rough_linen_rough_1k.exr",
+        "normal": "tmp/salon-v4/materials/curtains/rough_linen_nor_gl_1k.exr"
+      },
+      "mapping_repeat_per_metre": 3,
+      "tint": [
+        0.92,
+        0.9,
+        0.84
+      ],
+      "normal_strength": 0.2,
+      "files": [
+        {
+          "file": "tmp/salon-v4/materials/curtains/rough_linen_anisotropy_rotation_1k.png",
+          "sha256": "95855a93919f0b14eda8d28e84d76a57978ff7c6c13863c93d3da36c8b392aa9",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_linen/rough_linen_anisotropy_rotation_1k.png"
+        },
+        {
+          "file": "tmp/salon-v4/materials/curtains/rough_linen_anisotropy_strength_1k.png",
+          "sha256": "6c6640d962eab14e950ccfbe1b951d31ac0326c7dfd6f17bb6036adb79958354",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_linen/rough_linen_anisotropy_strength_1k.png"
+        },
+        {
+          "file": "tmp/salon-v4/materials/curtains/rough_linen_diff_1k.jpg",
+          "sha256": "04897d7611d7390ddf5b2c6f7273f448dfc48341fdbd1f4f207fa30b331d7f57",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rough_linen/rough_linen_diff_1k.jpg"
+        },
+        {
+          "file": "tmp/salon-v4/materials/curtains/rough_linen_disp_1k.png",
+          "sha256": "78b56241190055fce94238d587bc71504b155c5785ace241b455b256166c24a2",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_linen/rough_linen_disp_1k.png"
+        },
+        {
+          "file": "tmp/salon-v4/materials/curtains/rough_linen_mask_1k.png",
+          "sha256": "8ce3f6144e18d5ad757e7f9f22ea5efa46173a71c0aaffab8e56c855c16ec418",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_linen/rough_linen_mask_1k.png"
+        },
+        {
+          "file": "tmp/salon-v4/materials/curtains/rough_linen_metal_1k.exr",
+          "sha256": "edd7fcb0711e6273ab599238f69e8f4cc89723155b2b1f163712082ff9c88bef",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/exr/1k/rough_linen/rough_linen_metal_1k.exr"
+        },
+        {
+          "file": "tmp/salon-v4/materials/curtains/rough_linen_nor_gl_1k.exr",
+          "sha256": "5ad1a3f25f655aea1d5f354483c31297e195394e54c9e4eee42831068e0f875b",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/exr/1k/rough_linen/rough_linen_nor_gl_1k.exr"
+        },
+        {
+          "file": "tmp/salon-v4/materials/curtains/rough_linen_rough_1k.exr",
+          "sha256": "6d8eb97776726ed1becb7a4c87e11f0a4918349a9b3a26cc030b819b89e8271e",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/exr/1k/rough_linen/rough_linen_rough_1k.exr"
+        },
+        {
+          "file": "tmp/salon-v4/materials/curtains/rough_linen_spec_ior_1k.png",
+          "sha256": "51fbc4dbb11bd6fbf63afd62ba4da1361640901e7e1125bbcbc9121a5ea20744",
+          "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_linen/rough_linen_spec_ior_1k.png"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "engine": "Cycles",
+    "device": "CPU",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "maximum_samples": 192,
+    "adaptive_threshold": 0.02,
+    "time_limit_seconds": 1200,
+    "denoising": true,
+    "elapsed_render_seconds": 1005.1348361329999,
+    "camera_lens_mm": 27,
+    "camera_eye_height_m": 1.58
+  },
+  "preserved_original_meshes": 88,
+  "preserved_geometry_sha256": {
+    "BLI_Anthracite_Window_Frames": "cd5dab2d276a122029a8821e3d90e533e4fe851b8d984230abdad6bbb156bc16",
+    "BLI_Ceiling_A_ground_1": "132a972b908c6cc2c56ce4a77759212ad36c96b62d43d97694603288a3637167",
+    "BLI_Ceiling_A_ground_2": "0c695344ee32be1b7a6ac58adb58cab8e4e06d60800ec0595080a26d57101c48",
+    "BLI_Ceiling_A_ground_3": "caa84cadef0c2f139794c802f531cba3ccf2ecefe65bf138c8d6938e1ce22b4a",
+    "BLI_Ceiling_A_ground_4": "b9c385c5be3cdad402d11a598f316a01b37183e793f4ac8b86efe17358c89ce1",
+    "BLI_Ceiling_A_ground_5": "8ca7d07b875f5042c6c76ba407eb389d278e6131c132c268aa31d0c3eefa65d9",
+    "BLI_Ceiling_A_ground_6": "69c489663d0701f2a43cc3235e41385df1d590baad4ced1ff7dcce64abefe115",
+    "BLI_Ceiling_A_ground_7": "84c72abe1ce36fe29a3ccbc985c9da681024cefd3f5e59816f5d3ddcf86f7f78",
+    "BLI_Ceiling_A_upper_1": "2db478cce0043ba59f5e0f10424e75834cee784dc2d08fce2e08daa0c512c110",
+    "BLI_Ceiling_A_upper_2": "6e1d4db6042f8d3aadb9419b0e9b083b734fea4fde0238529f0e11faf75a7b45",
+    "BLI_Ceiling_A_upper_3": "776fc35eef345d36dd937ad70a6307772641a1a2d4b1fb759fc105bdc4a81172",
+    "BLI_Ceiling_A_upper_4": "5fb150d226007f494d0f088eff074bad4bffa8fa8b818e760437fba79e810802",
+    "BLI_Ceiling_A_upper_5": "0bcceb21bb5171bfbde82be3888929dcc81e29df2b326f340eeb7e6e3eb5799e",
+    "BLI_Ceiling_B_ground_1": "f9009a606c291f14aa6ef14cc6dd7c96c2bee811b7ec7e5beb2a44872effebf4",
+    "BLI_Ceiling_B_ground_2": "5fcf2063be21508d51a8b8e706b20a25fface9cbfd1f882ee696cb69d29e7335",
+    "BLI_Ceiling_B_ground_3": "34f89652788d9b8ca782a366068c7a6884c7d6ece925da4941a764b2c933d034",
+    "BLI_Ceiling_B_ground_4": "3796de57945f938023b3eb5676d1688f32788c1e12df77ac5a0d67641bf1b025",
+    "BLI_Ceiling_B_ground_5": "d857c175d93bef4b9365ffc930bd47976450f3b4b235631e2bb6ed8c2e278eb2",
+    "BLI_Ceiling_B_ground_6": "6c3cc232f13544238e8e3c7136f86fde7e2b3b05e561c7462e3ab54d6fba3759",
+    "BLI_Ceiling_B_ground_7": "cdcce8a355aaee166e12c0c76788fe1a80b07f337e9061799623d8b28e2a5fc5",
+    "BLI_Ceiling_B_upper_1": "104e961b5b79c7f674bdeed0840bdc28a5eac4e107e6248e06a292d954d14a68",
+    "BLI_Ceiling_B_upper_2": "1c9d5591dc9d21a2ba50461e6ffb5a0bcd6b4c33e8ba961e4dd871b7debadba3",
+    "BLI_Ceiling_B_upper_3": "064db490958feb56b39ffc5120d6848714130f809bc7381c694515e00e879400",
+    "BLI_Ceiling_B_upper_4": "71fd9e4ab1027dfe786e731ed75c51204ce17534ad7962343b87229f8a7c0eba",
+    "BLI_Ceiling_B_upper_5": "46165a37d088cfde65ab82dbb1293ce13556786519b7177572248c2ad64afe37",
+    "BLI_Clear_Glazing": "4853ee5676e63c27e537ccec6883881d78719f7b44b10438e20dfac2634aa277",
+    "BLI_Envelope_2_levels_4_units": "23679996aa34e990dff91c0c34c8af94f7f03480824969af186f534f4ecd967c",
+    "BLI_External_Entry_Doors": "7c15a207d2e614e65713cebf074df4377c8b8e2669a75a075add6b60617db4c7",
+    "BLI_External_Stair_L": "b59871f67a4dbaeec653576831914f0effb743500a69e55de79166c23672ed29",
+    "BLI_External_Stair_R": "b4fda18e6ca323794dd2adbb9726c583302020e0cf1562905702df017fbd0c9a",
+    "BLI_Flat_Roof_Parapet": "ef31826dba6f54444562136cc3d117668117be0a58c6b03352289701398170f5",
+    "BLI_Floor_A_ground_1": "5e3c47ca727a4ab4cf0a8f45f6020bbd6099458f5276f3fd3ae1b4dd2e32df42",
+    "BLI_Floor_A_ground_2": "4aca3d75e73fc451fca574126617d417b4ed7d366580143039fb44d319864f2b",
+    "BLI_Floor_A_ground_3": "53a930b312c5c832eb049d78e6027b798d7bd44737a4f98c310d0f08a85e1821",
+    "BLI_Floor_A_ground_4": "1f9f602caa92af00fbc7b4cdeaa1935f60714c3cf41ca5d6b3f4ab7e45bf06f6",
+    "BLI_Floor_A_ground_5": "fd433c63c9fabdfc6fef489d384a6aedab322eb20407257b1b2dfd717ed5438f",
+    "BLI_Floor_A_ground_6": "dd1242116b434910365d10ac703243922bee7c3da2292ec8c3c9e16a18109151",
+    "BLI_Floor_A_ground_7": "faa4d27cc3ba4f2854503254958ae6a2d8fd968fc881ea71f26420c98b408e15",
+    "BLI_Floor_A_upper_1": "78d9c81b7b93a69225d7ef0e080f77103b3d910b22ba5601a78b01846618a687",
+    "BLI_Floor_A_upper_2": "bc39e360a4a3ecde06ffd448db23588ef9a07ea9e2e8f419f734e2c7b4c4e1fc",
+    "BLI_Floor_A_upper_3": "c3215be0f3199ab18738031f555941c3a57f630c9dabbbd98ea68ed34a04e005",
+    "BLI_Floor_A_upper_4": "8d14ecc572c62594dfe5721da5caf15582af7b396b731546a667e3ea076a90ed",
+    "BLI_Floor_A_upper_5": "e92e276389adf708642f611080753425f3130f0f0b7e40773211329edc8436aa",
+    "BLI_Floor_B_ground_1": "7f98e1827cd30db1c34ad8dfa29ed161f23ca032fbae49ae643015e45315e1b5",
+    "BLI_Floor_B_ground_2": "878bf83ffaeb8a6928368958428c9a8f0d68789493e0eceb8d9ef1d03831a795",
+    "BLI_Floor_B_ground_3": "361fedfd0abd3e41e8ff094b3aeafaaaa5f101d07ee766e79336119d408eee3e",
+    "BLI_Floor_B_ground_4": "ea9dfdfa3e4b32147bb4f70bba58e8a3a2efd593b144dfb53c47faf35c14ea9f",
+    "BLI_Floor_B_ground_5": "707b05326bed858bf0bdf88ecb5807dbbc916929423ce50b7c9a2b50d76a00f9",
+    "BLI_Floor_B_ground_6": "19546dc9d366de86a55a9ad31fbbcfab479665a8f19b9ac62495ebc6cec6016c",
+    "BLI_Floor_B_ground_7": "ed9028484681b98f95fd4b31a4ef560cfd63f4e9a0a16a7e3027b57794c2a23a",
+    "BLI_Floor_B_upper_1": "3b2bb826e332364df0a1cfbfde156b4d458b02ec0b80c92344553dba4371cc12",
+    "BLI_Floor_B_upper_2": "1363f6fdb7c6a47d09ebb967366bd6f594a49873a4610277f1c5078b7c21f600",
+    "BLI_Floor_B_upper_3": "24b0f1b3b6d6347283ac03aa3c6ee0b95c3560b09ec48eecb858733669873e83",
+    "BLI_Floor_B_upper_4": "8a31925b4a56f380c74ebcba70ac64d24faedb4fb9434ce9960b59b2f6c687af",
+    "BLI_Floor_B_upper_5": "3b86b05807cbc123f32bfa521c6cb936ffbf4693895994d40a9d37837699008d",
+    "BLI_Furniture_A_ground_1": "1cc55a43ba01dbcaf8831935950e76e0bbe5cf703adbd75d629415bbc58daa95",
+    "BLI_Furniture_A_ground_2": "7fad7eb290800cd5ef46a6fbd2c813a0982385934e4b601340d07586ad902c0a",
+    "BLI_Furniture_A_ground_3": "bfd3999a175bfa71a247ee9ed47289660f499476c959179fb63f0af0c26cebf0",
+    "BLI_Furniture_A_ground_4": "ef37adffb369635b24ee77a08c8ef822781bc28cdc2e522dad0a11bcc76390ff",
+    "BLI_Furniture_A_ground_5": "8bf8fd95c3cb15b6aa718613ab3a00ef31cbfdc311372392c540c17f6bb9cc1e",
+    "BLI_Furniture_A_ground_6": "080b0c6db21a19346c162f4b9c9a99d95e7da67a59b8d23728f3c33b85be66dd",
+    "BLI_Furniture_A_ground_7": "ce3a23db5c9c273e44ba9431199ced8870e66fb18f79feabe7bb85b020314a1c",
+    "BLI_Furniture_A_upper_1": "5a5410ffec3b79acb7040d170040abbc744418a91f98b144ec60cd940b8c8f4b",
+    "BLI_Furniture_A_upper_2": "1582eab45fe8583b0dd8ee306844b934e12b4a65a6382dfbecf407ad88762c64",
+    "BLI_Furniture_A_upper_3": "d19d77b39a331cb1aabcdccb1c8286133f8b3842f6832ee7ed420131052a4384",
+    "BLI_Furniture_A_upper_4": "f60f1efd424bf6e0633345a0e16658037465e91ff6158f82dda6d9f294fdd3a7",
+    "BLI_Furniture_B_ground_1": "f171f810fe0a5dbe2eadf9f4da813a286cb359bfe412f0033e39351bb9d65364",
+    "BLI_Furniture_B_ground_2": "0cae3778e4096285daecee4deca9af1d50c61d2326b73f32b69ca7f2a2fd944f",
+    "BLI_Furniture_B_ground_3": "2cc60d344b18ddbd1c5d2f8e8f98521acec7f4f3fb860e2697c53a800d9ff3cb",
+    "BLI_Furniture_B_ground_4": "09dbfd8d1ca9d096ef0b13a640efa3d1a41605e573b52cf75965d50c8b19c39a",
+    "BLI_Furniture_B_ground_5": "74b6b502d24019f4eca786327d06afd2032b67021748c9ab62bbcb50e6a45e88",
+    "BLI_Furniture_B_ground_6": "7ea4940bc849839f419954d36a76038272066f1d534f0ad3b3a5936679a819aa",
+    "BLI_Furniture_B_ground_7": "902fd0c9ef57aba3526bc81a5792510abfaf70c33ef98d7e2b087c4dd41e359b",
+    "BLI_Furniture_B_upper_1": "e0789932f4c7cbebdf9b89cf1a86299882c320799c45e055900f0d281520deaf",
+    "BLI_Furniture_B_upper_2": "bd88b5bc5740f2dc30d1c277ce7efb0fe68a9952e4f62722026783f6128daf6a",
+    "BLI_Furniture_B_upper_3": "0aa79f41023ecdcd5a5a4669f84537a720d972afb01ca1d56c1d6b2b5ff39034",
+    "BLI_Furniture_B_upper_4": "7a4b706a2aa9c4a62335742571cf12535e61c47b30d9eb47ad48907a3ad5beda",
+    "BLI_Furniture_B_upper_5": "4a5abe67246b1bb862544807fb6692e432cac565c1fe155643bea59e35b9d641",
+    "BLI_Lawn": "419f43596fcbbb82cf1a323a1138a5c4031f1da7a1c9e5a64daa7c9f513590aa",
+    "BLI_Partitions_A_ground": "1295600471a7b97b77766f466b9396bbaad95a630e07da8fdbb1e6f74a49e037",
+    "BLI_Partitions_A_upper": "3e368b89f7d398585689c9ccdb3247b3c082dea12bfdc4f8a204f2a6112e021a",
+    "BLI_Partitions_B_ground": "861dace9372105401cfb4728bc672d89c081ce83a162c54634ec7f1c3e593fbe",
+    "BLI_Partitions_B_upper": "b7b52c76d9a802534defed818ea3b44a455e95581d793b12012c8301c96282b4",
+    "BLI_Roof_Vents": "cf931758d1e0a56a8ec67cc3abce122da2dfbe39c7898714e08c7dc383eb2b47",
+    "BLI_Site_Ground": "7b816af28e91078f3fb02a712ca9a053afe33efcac652f0f3e9a2137ca105ce2",
+    "BLI_Switchback_Rails_L": "21e46b9d46390fee9688b56346b0d98370357b39a24f6e8a6580d93184053147",
+    "BLI_Switchback_Rails_R": "d68c61c279b1181ea620af12fdb23017379671c02c5c5e3a8e3c2dddb7d2f47b",
+    "BLI_Walkways": "1acfb42e45b004539c6fa1816352d01055bfb8a9960d5ca72c1bce3400e87746"
+  },
+  "missing_images": [],
+  "limits": [
+    "Concept model; the private four-page source PDF is not available in this checkout.",
+    "No changes to plan.py or architecture.py. Finishes, furnishings and light fittings are inferred staging.",
+    "Only selected V4 models tested in Blender. Material maps are 1K/2K source assets.",
+    "Single 1080p still with time-bounded CPU Cycles and denoising; no claim of photorealism.",
+    "Original non-target rooms are preserved. Their illumination changes with the study world. No LUXORIA website changes."
+  ]
+}

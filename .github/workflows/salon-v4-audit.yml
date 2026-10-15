@@ -1,0 +1,38 @@
+name: Salon V4 - published archive audit
+on:
+  push:
+    branches: [salon-v4-premium-20261015]
+    paths:
+      - tools/audit_salon_v4.py
+      - .github/workflows/salon-v4-audit.yml
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Verify all actual release bytes and models
+        run: python -u tools/audit_salon_v4.py
+      - name: Test existing project
+        run: python -m pytest -q
+      - name: Lint existing project
+        run: python -m ruff check .
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: salon-v4-source-audit
+          path: houses/blizniak_dwulokalowy/output/salon_v4/v4_audit.json
+          retention-days: 7
+          if-no-files-found: error
+      - name: Publish audit receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create salon-v4-premium-20261015 --target "$GITHUB_SHA" --title "Salon A V4 - kontrolny render i audyt" --notes "Praca w toku. Audyt rzeczywistego ZIP V4; pojedynczy salon koncepcyjny, bez filmu i bez zmian strony LUXORIA." --prerelease
+          gh release upload salon-v4-premium-20261015 houses/blizniak_dwulokalowy/output/salon_v4/v4_audit.json

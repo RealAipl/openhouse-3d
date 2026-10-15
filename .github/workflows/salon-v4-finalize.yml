@@ -1,0 +1,89 @@
+name: Salon V4 - finalize existing release without re-render
+
+on:
+  push:
+    branches:
+      - salon-v4-premium-20261015
+    paths:
+      - .github/workflows/salon-v4-finalize.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: salon-v4-finalize-docs
+  cancel-in-progress: false
+
+jobs:
+  deliver-existing-salon:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout the actual branch
+        uses: actions/checkout@v4
+        with:
+          ref: salon-v4-premium-20261015
+          persist-credentials: true
+
+      - name: Download already-published verified preview and reports
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p docs/assets/salon-v4
+          gh release download salon-v4-premium-20261015 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern salon_v4_preview.jpg \
+            --pattern asset_report.json \
+            --pattern RAPORT.md \
+            --pattern SHA256SUMS.txt \
+            --dir docs/assets/salon-v4
+
+      - name: Verify delivery files without rendering
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          folder=Path('docs/assets/salon-v4')
+          preview=folder/'salon_v4_preview.jpg'
+          assert preview.stat().st_size>100000
+          with preview.open('rb') as file:
+              assert file.read(3)==b'\xff\xd8\xff'
+          data=json.loads((folder/'asset_report.json').read_text())
+          assert isinstance(data.get('models'),list) and len(data['models'])>=5
+          assert isinstance(data.get('materials'),list) and len(data['materials'])>=1
+          report=(folder/'RAPORT.md').read_text()
+          assert '1920' in report and 'V4' in report
+          checks=(folder/'SHA256SUMS.txt').read_text()
+          assert 'salon_v4_1920x1080.png' in checks
+          assert 'salon_v4_editable.blend' in checks
+          print('Finalizer verified actual release JPG, model/material report and checksums.')
+          PY
+
+      - name: Commit previews and explicit push to branch reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/assets/salon-v4/
+          if git diff --cached --quiet; then
+            echo "Preview and report already tracked; no new commit needed"
+          else
+            git commit -m "docs: add existing 1080p salon render preview and verified V4 report"
+            git push origin "HEAD:refs/heads/salon-v4-premium-20261015"
+          fi
+
+      - name: Update existing GitHub release description from final report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release edit salon-v4-premium-20261015 \
+            --repo "$GITHUB_REPOSITORY" \
+            --notes-file docs/assets/salon-v4/RAPORT.md
+          gh release view salon-v4-premium-20261015 \
+            --repo "$GITHUB_REPOSITORY" \
+            --json assets,url,name
