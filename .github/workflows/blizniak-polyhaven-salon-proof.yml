@@ -1,0 +1,97 @@
+name: Twin house - real Poly Haven CC0 living room proof
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/blizniak-polyhaven-salon-proof.yml
+
+permissions:
+  contents: read
+
+jobs:
+  stage-real-furniture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check original imported furniture script
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile houses/blizniak_dwulokalowy/stage_polyhaven_salon.py
+          python -m pip install -e .
+          echo "ARCHVIZ_PYTHON=$(command -v python)" >> "$GITHUB_ENV"
+
+      - name: Download the verified CC0 20-model furniture pack automatically
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/polyhaven_household_pack.py --mode download
+
+      - name: Get Blender 5.2.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --retry 3 --location --silent --show-error \
+            https://download.blender.org/release/Blender5.2/blender-5.2.1-linux-x64.tar.xz \
+            --output "$RUNNER_TEMP/blender.tar.xz"
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" --version
+
+      - name: Build the four-flat concept scene without rendering
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b --python-exit-code 1 \
+            --python run.py -- \
+            --house blizniak_dwulokalowy --save --norender --no-polish --device CPU
+
+      - name: Replace procedural furniture with 9 actual free Blender models and render
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/blender-5.2.1-linux-x64/blender" -b \
+            houses/blizniak_dwulokalowy/output/blizniak_dwulokalowy.blend \
+            --python-exit-code 1 \
+            --python houses/blizniak_dwulokalowy/stage_polyhaven_salon.py
+
+      - name: Verify render, model provenance, materials and editable scene
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image, ImageStat
+          base=Path("houses/blizniak_dwulokalowy/output/polyhaven_test")
+          pic=base/"salon_A_pietro_polyhaven_CC0.png"
+          blend=base/"blizniak_salon_A_polyhaven_CC0.blend"
+          doc=json.loads((base/"model_import_report.json").read_text())
+          assert len(doc["models"])==9
+          assert sum(m["meshes"] for m in doc["models"])>=9
+          assert doc["license"]=="CC0 1.0"
+          assert blend.is_file() and blend.stat().st_size>3000000
+          with Image.open(pic) as im:
+              im.verify()
+          with Image.open(pic) as im:
+              assert im.size==(1280,720),im.size
+              sigma=ImageStat.Stat(im.convert("RGB").resize((100,56))).stddev
+              assert max(sigma)>12, "Render unexpectedly blank"
+          print("VERIFIED CC0 MODELS",len(doc["models"]), "SCENE MB",blend.stat().st_size//1048576)
+          PY
+
+      - name: Publish actual interior proof render, model and receipts
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-polyhaven-furniture-living-room-blizniak
+          path: |
+            houses/blizniak_dwulokalowy/output/polyhaven_test/salon_A_pietro_polyhaven_CC0.png
+            houses/blizniak_dwulokalowy/output/polyhaven_test/blizniak_salon_A_polyhaven_CC0.blend
+            houses/blizniak_dwulokalowy/output/polyhaven_test/model_import_report.json
+          retention-days: 7
+          if-no-files-found: error
