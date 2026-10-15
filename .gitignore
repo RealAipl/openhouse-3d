@@ -29,3 +29,5 @@ __pycache__/
 !.env.example
 houses/stanford/assets/*.hdr
 houses/*/.gallery_review.json
+# Generated asset inventories, download caches and release packages.
+/tmp/

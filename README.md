@@ -58,6 +58,14 @@ photogrammetry. A person or an AI coding agent reads the photos, sets out the pl
 and writes a small house package. The library does the geometry, rendering and
 video. Hidden geometry is inferred; a reconstruction is not a measured survey.
 
+## Household models library V4
+
+[Download the V4 ZIP](https://github.com/RealAipl/openhouse-3d/releases/download/household-models-cc0-v4/OpenHouse_Household_Models_V4_CC0.zip):
+120 new CC0 household models, with real thumbnails, an offline catalog, author/source
+manifest and checksums. Includes 88 GLB models and 32 HQ food scans (OBJ/MTL/USD).
+No standalone materials or repeated V1–V3 assets. See the [source and validation
+notes](docs/household-models-v4.md) and [release](https://github.com/RealAipl/openhouse-3d/releases/tag/household-models-cc0-v4).
+
 ## Examples
 
 | House | Photos | What's included |

@@ -19,6 +19,7 @@ and reproduced. Images are removed on request under
 | Alpine rug textures and score | `houses/alpine/assets/rug_*.png` drawn by `houses/alpine/textiles.py` (fixed seeds); score synthesized by `houses/alpine/promo.py` | Project-generated; MIT with the code |
 | System fonts | Selected locally; not bundled in the repository | Do not copy proprietary system font files into releases |
 | Blender, FFmpeg and Python dependencies | External tools installed separately | Their upstream licenses apply |
+| Household models V4 | Original Innerscene, Poly Haven and ambientCG assets; individual credits, source URLs, checksums and license evidence in the V4 manifest | CC0 1.0; distributed as one models-only release ZIP; see [V4 documentation](docs/household-models-v4.md) |
 
 Poly Haven explicitly licenses its assets under [CC0](https://polyhaven.com/license).
 The website's text and trademarks are distinct from its asset license. Attribution
