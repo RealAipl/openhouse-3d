@@ -27,3 +27,11 @@ try:
  print("ambientCG v3 keys",list(ambient)[:18],"sample",json.dumps(ambient,ensure_ascii=False)[:1500])
 except Exception as e:
  print("ambientCG v3 error",type(e).__name__,str(e)[:500])
+
+models=read("https://api.polyhaven.com/assets?type=models")
+for slug in ("grass_medium_01","modern_arm_chair_01","modular_urban_apartments_facade","gaming_console","drawer_cabinet"):
+ print("DEBUG_MODEL_CATEGORY",slug,models.get(slug,{}).get("category"),"raw_type",models.get(slug,{}).get("type"))
+try:
+ a=read("https://ambientcg.com/api/v2/full_json?type=3DModel&limit=250&sort=Popular")
+ print("ACG_3D_MODEL_COUNT",a.get("numberOfResults"),"SAMPLE",[(i.get("assetId"),i.get("displayCategory"),i.get("displayName")) for i in a.get("foundAssets",[])[:45]])
+except Exception as e: print("ACG_3D_MODEL_ERROR",str(e)[:400])
