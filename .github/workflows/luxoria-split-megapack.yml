@@ -1,0 +1,85 @@
+name: LUXORIA - split existing mega ZIP for direct ChatGPT transfer
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/luxoria-split-megapack.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  split-pack:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download fully validated mega archive from earlier successful run
+        uses: actions/download-artifact@v4
+        with:
+          name: LUXORIA-Interior-MegaPack-CC0
+          run-id: 38680174529
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: retrieved
+
+      - name: Integrity verify and split (no network re-download of assets)
+        shell: bash
+        run: |
+          set -euo pipefail
+          src='retrieved/tmp/luxoria-interior-megapack-CC0.zip'
+          test -s "$src"
+          mkdir -p chunks
+          python - <<'PY'
+          import hashlib,json,zipfile
+          from pathlib import Path
+          src=Path('retrieved/tmp/luxoria-interior-megapack-CC0.zip')
+          with zipfile.ZipFile(src) as z:
+              assert z.testzip() is None
+              meta=json.loads(z.read('manifest.json'))
+              assert meta['models']>=55 and meta['pbr_materials']>=75
+              assert 'ZOBACZ_ZAWARTOSC.jpg' in z.namelist()
+              print('Verified validated megabundle',meta['models'],meta['pbr_materials'],'ZIP MB',src.stat().st_size/1048576)
+          digest=hashlib.sha256(src.read_bytes()).hexdigest()
+          Path('chunks/original_sha256.txt').write_text(digest+'  '+src.name+'\n')
+          chunk_size=300_000_000
+          with src.open('rb') as f:
+              for i,letter in enumerate(('aa','ab','ac','ad','ae','af','ag')):
+                  blob=f.read(chunk_size)
+                  if not blob: break
+                  Path('chunks/part_'+letter).write_bytes(blob)
+                  print('Split part',letter,len(blob))
+          parts=sorted(Path('chunks').glob('part_*'))
+          assert len(parts)==3, ('Expected precisely 3 parts',parts)
+          assert sum(p.stat().st_size for p in parts)==src.stat().st_size
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LUXORIA-MegaPack-part-aa
+          path: chunks/part_aa
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LUXORIA-MegaPack-part-ab
+          path: chunks/part_ab
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LUXORIA-MegaPack-part-ac
+          path: chunks/part_ac
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LUXORIA-MegaPack-checksum
+          path: chunks/original_sha256.txt
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
