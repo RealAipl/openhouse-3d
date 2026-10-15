@@ -1,0 +1,47 @@
+name: LUXORIA - test real CC0 source files for Home V2
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/luxoria-home-v2-smoke.yml
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify real downloaded ambientCG 1K JPG texture set with correct PBR maps
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import urllib.request,zipfile
+          from urllib.error import HTTPError
+          ids=['Marble012','WoodFloor051','Fabric030']
+          for aid in ids:
+              url=f'https://ambientcg.com/get?file={aid}_1K-JPG.zip'
+              request=urllib.request.Request(url,headers={'User-Agent':'Luxoria-CC0-Smoke-v2/1.0'})
+              try:
+                  with urllib.request.urlopen(request,timeout=80) as r:
+                      file=Path('/tmp')/(aid+'.zip')
+                      with file.open('wb') as f:
+                          content=r.read(30*1024*1024)
+                          assert len(content)<30*1024*1024,'Size exceeded'
+                          f.write(content)
+                      with zipfile.ZipFile(file) as z:
+                          names=z.namelist()
+                          assert z.testzip() is None
+                          print('MAPS',aid,'ZIP MB',round(file.stat().st_size/1048576,2),names[:12])
+                          assert any('Color' in n for n in names)
+                          assert any('NormalGL' in n for n in names)
+                          assert any('Roughness' in n for n in names)
+              except HTTPError as e:
+                  print('HTTP ERROR',aid,e.code,url)
+                  raise
+          PY
