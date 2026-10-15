@@ -10,7 +10,7 @@ from archviz.lights import room_light
 
 def _local_vertical(mesh, seg, u, y0, y1, z0, z1, door=None):
     x=seg_interval(seg,u,u)[0]
-    holes=[] if door is None else [(door[0],door[1],z0,z0+2.10)]
+    holes=[] if door is None else [(door[0],door[1],z0,z0+2.00)]
     mesh.wall("Y",y0,y1,x-.05,x+.05,z0,z1,holes=holes)
 
 
@@ -19,27 +19,32 @@ def _local_horizontal(mesh, seg, u0, u1, y, z0, z1, door=None):
     holes=[]
     if door is not None:
         a,b=seg_interval(seg,door[0],door[1])
-        holes=[(a,b,z0,z0+2.10)]
+        holes=[(a,b,z0,z0+2.00)]
     mesh.wall("X",x0,x1,y-.05,y+.05,z0,z1,holes=holes)
 
 
 def _partitions(M):
-    for seg in ("A","B"):
-        for level in ("ground","upper"):
-            z0=LEVEL_Z[level]
-            z1=Z_LOWER_CEIL if level=="ground" else Z_UPPER_CEIL
-            walls=MB()
-            _local_horizontal(walls,seg,0,7.34,4.79,z0,z1,(2.60,3.51))
-            _local_vertical(walls,seg,2.40,4.79,7.25,z0,z1,(6.15,7.06))
-            _local_vertical(walls,seg,3.75,4.79,8.63,z0,z1,(6.03,6.96))
-            if level=="ground":
-                _local_vertical(walls,seg,2.50,.27,4.79,z0,z1,(3.51,4.38))
-                _local_horizontal(walls,seg,0,3.75,7.25,z0,z1,(2.56,3.43))
-                _local_vertical(walls,seg,1.60,7.25,8.63,z0,z1,(7.98,8.88))
+    """Corrected 18 cm dividing wall, 10 cm partitions and service recess."""
+    for seg in ("A", "B"):
+        for level in ("ground", "upper"):
+            z0 = LEVEL_Z[level]
+            z1 = Z_LOWER_CEIL if level == "ground" else Z_UPPER_CEIL
+            walls = MB()
+            x0, x1 = seg_interval(seg, 0, 7.34)
+            da, db = seg_interval(seg, 2.63, 3.43)
+            walls.wall("X", x0, x1, 4.93, 5.11, z0, z1,
+                       holes=[(da, db, z0, z0+2.0)])
+            _local_vertical(walls, seg, 2.18, 5.11, 7.03, z0, z1, (5.83, 6.63))
+            _local_vertical(walls, seg, 1.82, 7.03, 7.77, z0, z1)
+            _local_horizontal(walls, seg, 1.77, 2.23, 7.03, z0, z1)
+            _local_vertical(walls, seg, 3.85, 5.11, 9.05, z0, z1, (5.83, 6.63))
+            if level == "ground":
+                _local_vertical(walls, seg, 2.55, .39, 4.93, z0, z1, (3.33, 4.13))
+                _local_horizontal(walls, seg, 0, 3.80, 7.72, z0, z1, (2.10, 2.90))
+                _local_vertical(walls, seg, 1.82, 7.77, 9.05, z0, z1, (7.98, 8.68))
             else:
-                _local_horizontal(walls,seg,0,2.40,7.25,z0,z1,(1.10,1.97))
-                _local_vertical(walls,seg,2.40,7.25,8.63,z0,z1,(8.06,8.94))
-            walls.build("BLI_Partitions_" + seg + "_" + level,[M["party"]])
+                _local_horizontal(walls, seg, 0, 3.80, 7.72, z0, z1, (2.37, 3.17))
+            walls.build("BLI_Partitions_" + seg + "_" + level, [M["party"]])
 
 
 def _furnish_room(room, box, M):
@@ -117,7 +122,7 @@ def _furnish_room(room, box, M):
         furniture.cylinder(wm_x,wm_y,z0,z0+.83,.34,seg=28,mi=3)
         furniture.cylinder(wm_x,wm_y,z0+.79,z0+.83,.20,seg=24,mi=4)
         cab_x0,cab_x1=(x0+.08,x0+.43) if seg=="A" else (x1-.43,x1-.08)
-        cabinet_run(furniture,cab_x0,cab_x1,y0+.12,y1-.10,z0+1.21,z0+2.10,mi=2,n=2)
+        cabinet_run(furniture,cab_x0,cab_x1,y0+.12,y1-.10,z0+1.21,z0+2.00,mi=2,n=2)
     elif kind in ("wiatrolap","przedpokoj"):
         # No 2-metre wardrobes directly in the camera path.
         furniture.box(x0+.15,x0+.44,y1-.73,y1-.13,z0,z0+1.87,mi=1)

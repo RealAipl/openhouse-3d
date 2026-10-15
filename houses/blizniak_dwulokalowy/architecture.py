@@ -9,15 +9,13 @@ from archviz.mesh import MB
 def _window_holes(segment, level, facade):
     z = LEVEL_Z[level]
     if facade == "front":
-        spans = ((0.38,1.86), (2.66,4.11), (4.88,6.34)) if level == "upper" else (
-                 (0.38,1.83), (2.65,4.14), (4.82,6.32))
+        spans = ((0.68, 2.18), (3.065, 4.565), (5.22, 6.72))
         return sorted((seg_interval(segment, a,b)[0], seg_interval(segment,a,b)[1],
-                       z + (0.825 if level=="upper" else (0.05 if a>2.5 else 0.825)),
-                       z + (2.31 if level=="upper" else (2.32 if a>2.5 else 2.31)))
-                      for a,b in spans)
+                       z + (0.825 if level == "upper" or a < 2.5 else 0.0),
+                       z + 2.125) for a,b in spans)
     if facade == "rear":
-        spans = ((2.05,2.96,0.0,2.18), (4.77,6.27,0.825,2.31)) if level == "ground" else (
-                 (4.77,6.27,0.825,2.31),)
+        spans = ((2.17,3.17,0.0,2.00), (4.77,6.27,0.825,2.125)) if level == "ground" else (
+                 (4.77,6.27,0.825,2.125),)
         return sorted((seg_interval(segment,a,b)[0],seg_interval(segment,a,b)[1],
                        z+z0,z+z1) for a,b,z0,z1 in spans)
     raise ValueError(facade)
@@ -44,7 +42,7 @@ def _make_walls(M):
     shell.wall("Y",Y_FRONT,Y_REAR,X_INNER_RIGHT,X_MAX,Z_GND,Z_LOWER_CEIL)
     for a,b in ((X_MIN,X_INNER_LEFT),(X_INNER_RIGHT,X_MAX)):
         shell.wall("Y",Y_FRONT,Y_REAR,a,b,Z_UP,Z_UPPER_CEIL,
-                   holes=[(7.76,8.68,Z_UP,Z_UP+2.20)])
+                   holes=[(7.85,8.85,Z_UP,Z_UP+2.03)])
     shell.build("BLI_Envelope_2_levels_4_units", [M["facade"]])
     parapet=MB()
     parapet.box(X_MIN-0.03,X_MAX+0.03,-0.03,0.19,Z_ROOF,Z_PARAPET)
@@ -63,7 +61,7 @@ def _make_glazing(M):
     glass=MB(); frames=MB(); doors=MB()
     for segment in ("A","B"):
         for level in ("ground","upper"):
-            for face,y in (("front",Y_IN_FRONT*.51),("rear",Y_REAR+.11)):
+            for face,y in (("front",Y_IN_FRONT*.51),("rear",Y_REAR-.195)):
                 for x0,x1,z0,z1 in _window_holes(segment,level,face):
                     if z0==LEVEL_Z[level] and face=="rear":
                         doors.box(x0+.04,x1-.04,y-.03,y+.03,z0+.015,z1-.02)
@@ -75,8 +73,8 @@ def _make_glazing(M):
                         frames.box(x-.018,x+.018,y-.045,y+.045,z0,z1)
         # Side entrance to the first-floor independent dwelling.
         x = X_MIN+.15 if segment=="A" else X_MAX-.15
-        doors.box(x-.028,x+.028,7.79,8.65,Z_UP+.02,Z_UP+2.16)
-        frames.frame(x-.045,x+.045,7.76,8.68,Z_UP,Z_UP+2.20,.045,axis="X")
+        doors.box(x-.028,x+.028,7.88,8.82,Z_UP+.02,Z_UP+2.00)
+        frames.frame(x-.045,x+.045,7.85,8.85,Z_UP,Z_UP+2.03,.045,axis="X")
     glass.build("BLI_Clear_Glazing",[M["glass"]])
     frames.build("BLI_Anthracite_Window_Frames",[M["rail"]])
     doors.build("BLI_External_Entry_Doors",[M["door"]])

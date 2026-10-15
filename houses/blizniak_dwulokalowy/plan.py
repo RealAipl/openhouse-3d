@@ -1,42 +1,40 @@
-"""Concept geometry of four independent dwellings, from KORMET-PROJEKT's four-sheet PDF.
+"""Four dwellings traced against the supplied four-sheet KORMET concept PDF.
 
-Coordinates: x horizontal across front elevation, y front-to-rear, z above ground (metres).
-A and B are mirrors. Plans, dimensions and areas are NOT a certified BIM reconstruction.
-Measured directly from visible dimension strings: 15.87 total x, 7.34 internal x per wing,
-0.41 party wall, 8.90 estimated shell depth, lower floor ±0.00, upper ±2.93, outer staircase upper threshold +3.01.
-Interiors and openings are traced at concept fidelity; exact partition coordinates unverified.
-The shell depth was revised from 9.44 to 8.90 m after cross-checking the drawing's
-vertical dimension chain; wall-line dimensions and functional room areas differ.
+Source reviewed 2026-10-15. Coordinates in metres, y=0 at garden elevation.
+Overall depth 9.44 from 0.39+4.54+0.18+2.56+0.10+1.28+0.39.
+Upper living internal 4.14 label conflicts with 4.54 dimension chain and
+33.32 m2 schedule; use 4.54 and disclose the source inconsistency.
+Ceiling height remains inferred: no architectural section was supplied.
 """
 X_MIN, X_MAX = -7.935, 7.935
 X_INNER_LEFT, X_INNER_RIGHT = -7.545, 7.545
 PARTY_HALF = 0.205
 WING_INNER_WIDTH = 7.34
-Y_FRONT, Y_REAR = 0.0, 8.90
-Y_IN_FRONT, Y_IN_REAR = 0.27, 8.63
+Y_FRONT, Y_REAR = 0.0, 9.44
+Y_IN_FRONT, Y_IN_REAR = 0.39, 9.05
 Z_GND, Z_UP = 0.0, 2.93
 Z_LOWER_CEIL, Z_UPPER_CEIL = 2.69, 5.62
 Z_ROOF, Z_PARAPET = 5.90, 6.30
 Z_UPPER_LANDING = 3.01
 WALL_T = 0.10
-PARTITION_Y = 4.79
+PARTITION_Y = 5.02
 
 # Every area below is read from the PDF room schedule, not calculated from our conceptual boxes.
 GROUND = (
-    ("1", "wiatrolap", 2.47, "tile", (1.60, 3.75, 7.25, 8.63)),
-    ("2", "pom_gospodarcze", 2.27, "tile", (0.00, 1.60, 7.25, 8.63)),
-    ("3", "przedpokoj", 4.02, "wood", (2.40, 3.75, 4.79, 7.25)),
-    ("4", "lazienka", 5.23, "tile", (0.00, 2.40, 4.79, 7.25)),
-    ("5", "pokoj_tyl", 13.55, "wood", (3.75, 7.34, 4.79, 8.63)),
-    ("6", "salon_z_aneksem", 21.43, "wood", (2.50, 7.34, 0.27, 4.79)),
-    ("7", "pokoj_przod", 11.35, "wood", (0.00, 2.50, 0.27, 4.79)),
+    ("1", "wiatrolap", 2.47, "tile", (1.87, 3.80, 7.77, 9.05)),
+    ("2", "pom_gospodarcze", 2.27, "tile", (0.00, 1.77, 7.77, 9.05)),
+    ("3", "przedpokoj", 4.02, "wood", (2.23, 3.80, 5.11, 7.67)),
+    ("4", "lazienka", 5.23, "tile", (0.00, 2.13, 5.11, 7.67)),
+    ("5", "pokoj_tyl", 13.55, "wood", (3.90, 7.34, 5.11, 9.05)),
+    ("6", "salon_z_aneksem", 21.43, "wood", (2.60, 7.34, 0.39, 4.93)),
+    ("7", "pokoj_przod", 11.35, "wood", (0.00, 2.50, 0.39, 4.93)),
 )
 UPPER = (
-    ("1", "wiatrolap", 4.86, "tile", (0.00, 2.40, 7.25, 8.63)),
-    ("2", "lazienka", 5.23, "tile", (0.00, 2.40, 4.79, 7.25)),
-    ("3", "przedpokoj", 4.02, "wood", (2.40, 3.75, 4.79, 8.63)),
-    ("4", "pokoj_tyl", 13.55, "wood", (3.75, 7.34, 4.79, 8.63)),
-    ("5", "salon_z_aneksem", 33.32, "wood", (0.00, 7.34, 0.27, 4.79)),
+    ("1", "wiatrolap", 4.86, "tile", (0.00, 3.80, 7.77, 9.05)),
+    ("2", "lazienka", 5.23, "tile", (0.00, 2.13, 5.11, 7.67)),
+    ("3", "przedpokoj", 4.02, "wood", (2.23, 3.80, 5.11, 7.67)),
+    ("4", "pokoj_tyl", 13.55, "wood", (3.90, 7.34, 5.11, 9.05)),
+    ("5", "salon_z_aneksem", 33.32, "wood", (0.00, 7.34, 0.39, 4.93)),
 )
 LEVEL_Z = {"ground": Z_GND, "upper": Z_UP}
 PROGRAM = {"ground": GROUND, "upper": UPPER}
