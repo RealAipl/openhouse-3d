@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - .github/workflows/blizniak-polyhaven-salon-proof.yml
+      - houses/blizniak_dwulokalowy/stage_polyhaven_salon.py
 
 permissions:
   contents: read
