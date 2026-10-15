@@ -180,8 +180,8 @@ def main():
     assert sum(x["meshes"] for x in report)>len(PLACEMENTS)
 
     # Existing ceiling can mute sunlight in proof renders.
-    new_area_light("PH_CeilingSoftbox_1",(-4.6,2.40,5.46),420,2.7,(-4.1,2.3,3.12))
-    new_area_light("PH_CeilingSoftbox_2",(-2.1,3.20,5.48),240,2.1,(-2.2,2.2,3.20))
+    new_area_light("PH_CeilingSoftbox_1",(-4.6,2.40,5.46),220,2.7,(-4.1,2.3,3.12))
+    new_area_light("PH_CeilingSoftbox_2",(-2.1,3.20,5.48),120,2.1,(-2.2,2.2,3.20))
     scene=bpy.context.scene
     camera=bpy.data.objects.get("Cam_room_A_upper_5")
     assert camera is not None
@@ -194,6 +194,7 @@ def main():
     scene.render.resolution_percentage=100
     scene.view_settings.view_transform="AgX"
     scene.view_settings.look="AgX - Medium High Contrast"
+    scene.view_settings.exposure=-0.32
     scene.render.image_settings.file_format="PNG"
     # Use existing Cycles illumination, HDRI/world and corrected room camera.
     scene.render.filepath=str(OUT/"salon_A_pietro_polyhaven_CC0.png")
@@ -212,7 +213,19 @@ def main():
     scene_file=OUT/"blizniak_salon_A_polyhaven_CC0.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(scene_file))
     bpy.ops.render.render(write_still=True)
+    # Additional view from the entrance side, framed around the real sofa
+    # instead of using the original wide-angle documentation camera alone.
+    cam_data=bpy.data.cameras.new("PH_Interior_Camera_Diagonal")
+    cam_data.lens=23
+    second=bpy.data.objects.new("PH_Interior_Camera_Diagonal",cam_data)
+    bpy.context.scene.collection.objects.link(second)
+    second.location=(-2.80,4.27,4.49)
+    second.rotation_euler=(Vector((-4.86,2.27,4.13))-second.location).to_track_quat("-Z","Y").to_euler()
+    scene.camera=second
+    scene.render.filepath=str(OUT/"salon_A_polyhaven_perspektywa.png")
+    bpy.ops.render.render(write_still=True)
     image=OUT/"salon_A_pietro_polyhaven_CC0.png"
+    assert (OUT/"salon_A_polyhaven_perspektywa.png").stat().st_size>30000
     if not image.exists() or image.stat().st_size<30000:
         raise RuntimeError("Missing or undersized proof render")
     report_file=OUT/"model_import_report.json"
