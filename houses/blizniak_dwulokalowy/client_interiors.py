@@ -122,7 +122,7 @@ def tube(name, a, b, radius, material='metal'):
     return move(mb.build(ROOM+'_'+name, [M[material]], smooth=True))
 
 
-def asset(key, loc, size, angle=0, name=None):
+def asset(key, loc, size, angle=0, name=None, height=None):
     """Reuse verified GLB geometry, sharing meshes across four dwellings."""
     if key not in CACHE:
         a = ASSETS[key]
@@ -152,7 +152,8 @@ def asset(key, loc, size, angle=0, name=None):
     data, lo, hi = CACHE[key]
     scale = size/max((hi-lo).x, (hi-lo).y)
     origin = Vector(((lo.x+hi.x)/2, (lo.y+hi.y)/2, lo.z))
-    transform = unit_matrix() @ Matrix.Translation(Vector(loc)) @ Matrix.Rotation(math.radians(angle),4,'Z') @ Matrix.Scale(scale,4) @ Matrix.Translation(-origin)
+    scaling = Matrix.Diagonal((scale, scale, height/(hi-lo).z if height is not None else scale, 1))
+    transform = unit_matrix() @ Matrix.Translation(Vector(loc)) @ Matrix.Rotation(math.radians(angle),4,'Z') @ scaling @ Matrix.Translation(-origin)
     objs = []
     for mesh, matrix in data:
         ob = bpy.data.objects.new(ROOM+'_'+(name or key), mesh)
@@ -322,7 +323,7 @@ def living(upper):
         asset(LAMP,(.40,3.95,.03),.30)
         art(.055,2.47,1.57,1.48,.86,'X')
         dining_u,dining_y=5.25,1.67
-        asset(DINING,(dining_u,dining_y,.03),1.62,90)
+        asset(DINING,(dining_u,dining_y,.03),1.62,90,height=.72)
         chairs=[(4.52,1.24,90),(4.52,2.08,90),(5.98,1.24,-90),(5.98,2.08,-90)]
     else:
         box('Woven wool rug',(3.65,2.34,.039),(1.94,2.40,.018),'rug',.025)
@@ -332,7 +333,7 @@ def living(upper):
         box('TV screen',(2.675,2.18,1.40),(.033,1.13,.67),'blackglass',.012)
         asset(LAMP,(2.94,3.12,.03),.27)
         dining_u,dining_y=5.95,1.33
-        asset(DINING,(dining_u,dining_y,.03),1.42,0)
+        asset(DINING,(dining_u,dining_y,.03),1.42,0,height=.72)
         chairs=[(5.47,.76,0),(6.29,.76,0),(5.47,1.90,180),(6.29,1.90,180)]
     for i,(u,y,ang) in enumerate(chairs):asset(DCHAIR,(u,y,.03),.52,ang,'Dining chair '+str(i))
     # Slim custom pendant avoids an oversized hanging object in the shot.

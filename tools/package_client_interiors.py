@@ -142,7 +142,8 @@ def film():
         d.text((85,978),sub,font=ImageFont.truetype(FONT,23),fill='#f0f2ed')
         overlay=temp/f'title-{i}.png';plate.save(overlay)
         clip=temp/f'clip-{i}.mp4'
-        vf="[0:v]scale=2560:1440,zoompan=z='min(zoom+0.00030,1.036)':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=120:s=1920x1080:fps=24[bg];[bg][1:v]overlay=0:0,fade=t=in:st=0:d=0.35,fade=t=out:st=4.65:d=0.35,format=yuv420p[v]"
+        fade_in="" if i==0 else "fade=t=in:st=0:d=0.35,"
+        vf=f"[0:v]scale=2560:1440,zoompan=z='min(zoom+0.00030,1.036)':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=120:s=1920x1080:fps=24[bg];[bg][1:v]overlay=0:0,{fade_in}fade=t=out:st=4.65:d=0.35,format=yuv420p[v]"
         subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-i',str(OUT/'Obrazy'/(stem+'.png')),'-i',str(overlay),'-filter_complex',vf,'-map','[v]','-frames:v','120','-an','-c:v','libx264','-preset','fast','-crf','19','-threads','4',str(clip)],check=True)
         clips.append(clip)
     concat=temp/'list.txt';concat.write_text(''.join(f"file '{p.resolve()}'\n" for p in clips))

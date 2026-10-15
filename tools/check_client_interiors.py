@@ -56,6 +56,15 @@ for room in plan.ROOMS:
         ok=lo[0]>=bb[0]-tol and hi[0]<=bb[1]+tol and lo[1]>=bb[2]-tol and hi[1]<=bb[3]+tol
         assert ok,(room,key,lo,hi,bb)
         asset_bounds.append({'room':room,'asset':key,'inside_room':ok,'min':lo,'max':hi})
+# Compact dining footprints must retain a usable 75 cm tabletop height.
+dining_checks=[]
+for bounds in asset_bounds:
+    if bounds['asset']=='span-225-extendable-dining-table-b5cc7e64':
+        floor=plan.ROOMS[bounds['room']][4]
+        height=bounds['max'][2]-floor
+        assert abs(height-.75)<.005,(bounds['room'],height)
+        dining_checks.append({'room':bounds['room'],'tabletop_height_m':round(height,4)})
+assert len(dining_checks)==4
 # Keep the clear living-room entrance usable in all four apartments.
 entry_checks=[]
 for segment in ['A','B']:
@@ -76,6 +85,7 @@ for level in ['ground','upper']:
     b={(-round(x,5),round(y,5)) for poly in polys['B_'+level] for x,y in poly}
     assert a==b,level
 result={'reopened_blend':True,'living_entrance_checks':entry_checks,'mesh_object_count':sum(o.type=='MESH' for o in scene.objects),'open_internal_door_leaves':len(leaves),'mirror_walls_match':True,'asset_bounds_checks':asset_bounds,'packed_images':sum(bool(i.packed_file) for i in bpy.data.images),'missing_images':missing,'unit_object_counts':units,'cameras':checks,'wall_footprints':polys,'wall_materials':list({m.name for o in scene.objects if o.name.startswith('BLI_') for m in o.data.materials}),'original_salon_sha256':hashlib.sha256((ROOT/'tmp/existing/salon_v4_editable.blend').read_bytes()).hexdigest(),'sha256_blend':hashlib.sha256((OUT/'Wnetrza_4_lokale.blend').read_bytes()).hexdigest()}
+result['dining_table_height_checks']=dining_checks
 (OUT/'KONTROLA_PLIKU_BLEND.json').write_text(json.dumps(result,indent=2))
 geometry_file=OUT/'KONTROLA_GEOMETRII.json'
 if geometry_file.exists():
