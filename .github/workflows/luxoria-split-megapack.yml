@@ -28,13 +28,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          src='retrieved/tmp/luxoria-interior-megapack-CC0.zip'
-          test -s "$src"
+          find retrieved -maxdepth 5 -type f -printf '%p (%s bytes)\n'
           mkdir -p chunks
           python - <<'PY'
           import hashlib,json,zipfile
           from pathlib import Path
-          src=Path('retrieved/tmp/luxoria-interior-megapack-CC0.zip')
+          available=list(Path('retrieved').rglob('luxoria-interior-megapack-CC0.zip'))
+          assert len(available)==1, available
+          src=available[0]
           with zipfile.ZipFile(src) as z:
               assert z.testzip() is None
               meta=json.loads(z.read('manifest.json'))
