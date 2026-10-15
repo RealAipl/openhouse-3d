@@ -1,0 +1,40 @@
+name: LUXORIA - attach genuine CC0 Home V2 preview
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/luxoria-home-v2-preview.yml
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve preview and manifest from real public GitHub Release
+        shell: bash
+        run: |
+          mkdir -p preview
+          gh release download luxoria-home-interiors-cc0-v2 \
+            -p 'ZOBACZ_NOWE_ZASOBY.jpg' -p 'MANIFEST_V2.json' \
+            -D preview --repo "$GITHUB_REPOSITORY"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('preview/MANIFEST_V2.json').read_text())
+          assert d['duplicates_v1']==0 and len(d['assets'])==sum(d['counts'].values())
+          print(d['counts'])
+          assert Path('preview/ZOBACZ_NOWE_ZASOBY.jpg').stat().st_size>100000
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: luxoria-v2-genuine-catalogue-preview
+          path: preview/
+          retention-days: 7
+          if-no-files-found: error
