@@ -13,3 +13,5 @@ Kontrola: obrysy ścian działowych zostały wyeksportowane z rzeczywistej sceny
 Dodatkowa kontrola: pełny pion instalacyjny zamknięty w czterech lokalach; 40 grup modeli mieści się w obrysach przypisanych pomieszczeń. Sprawdzono 86 spakowanych obrazów (brak brakujących). Pierwsze dwa kadry nie widzą zmienionego pionu (po 5184 promienie, 0 trafień), więc nie były niepotrzebnie renderowane ponownie. CI GitHub dla ecba381 zakończyło się sukcesem.
 
 Uzupełniono 16 otwartych skrzydeł drzwi wewnętrznych i ościeżnice, poprawiono wolne dojście do gospodarczego. Kontrola widoczności potwierdziła brak nowych drzwi w czterech ukończonych kadrach; kolejne są liczone z kompletną stolarką.
+
+Kontynuacja: zachowano 5 gotowych obrazów i dokończono pokój gościnny. Skorygowano kadry holu i wiatrołapu oraz szafkę/TV na piętrze, które naruszały dojście do salonu. Kontrola rzeczywistych siatek sprawdza teraz wolne podejście 80 x 68 cm w czterech lokalach. Ujęcia zmienionej szafki są liczone ponownie; pozostałe pozostają zachowane.

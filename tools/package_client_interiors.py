@@ -48,7 +48,7 @@ def prepare():
         Image.open(source).convert('RGB').save(p,quality=96,subsampling=0)
     filecopy(OUT/'Wnetrza_4_lokale.blend',DELIVERY/'Model/Wnetrza_4_lokale.blend')
     filecopy(OUT/'README.md',DELIVERY/'README.md')
-    for name in ['Kontrola_rzutow.png','KONTROLA_GEOMETRII.json','KONTROLA_PLIKU_BLEND.json','KONTROLA_WIDOCZNOSCI_PIONU.json','KONTROLA_WIDOCZNOSCI_DRZWI.json','ODCZYT_RYSUNKOW.json','ZRODLA_MODELI.json','ZRODLA_MATERIALOW.json']:
+    for name in ['Kontrola_rzutow.png','KONTROLA_GEOMETRII.json','KONTROLA_PLIKU_BLEND.json','ODCZYT_RYSUNKOW.json','ZRODLA_MODELI.json','ZRODLA_MATERIALOW.json']:
         filecopy(OUT/name,DELIVERY/'Dokumentacja'/name)
     filecopy(OUT/'Obrazy/render_times.json',DELIVERY/'Dokumentacja/RENDERING.json')
     filecopy(ROOT/'LICENSE',DELIVERY/'Zrodla/LICENSE_MIT.txt')

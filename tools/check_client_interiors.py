@@ -56,11 +56,26 @@ for room in plan.ROOMS:
         ok=lo[0]>=bb[0]-tol and hi[0]<=bb[1]+tol and lo[1]>=bb[2]-tol and hi[1]<=bb[3]+tol
         assert ok,(room,key,lo,hi,bb)
         asset_bounds.append({'room':room,'asset':key,'inside_room':ok,'min':lo,'max':hi})
+# Keep the clear living-room entrance usable in all four apartments.
+entry_checks=[]
+for segment in ['A','B']:
+    for level,z0 in [('ground',0),('upper',2.93)]:
+        room=segment+'_'+level+('_6' if level=='ground' else '_5')
+        ax,bx=plan.seg_interval(segment,2.63,3.43)
+        collisions=[]
+        for ob in scene.objects:
+            if ob.type!='MESH' or ob.get('room')!=room:continue
+            pts=[ob.matrix_world@Vector(v) for v in ob.bound_box]
+            lo=[min(p[i] for p in pts) for i in range(3)];hi=[max(p[i] for p in pts) for i in range(3)]
+            if hi[0]>ax+.002 and lo[0]<bx-.002 and hi[1]>4.25 and lo[1]<4.93 and hi[2]>z0+.06 and lo[2]<z0+1.80:
+                collisions.append(ob.name)
+        assert not collisions,(room,collisions)
+        entry_checks.append({'unit':segment+'_'+level,'clear_width_m':.8,'checked_living_approach_depth_m':.68,'collisions':collisions})
 for level in ['ground','upper']:
     a={tuple(round(v,5) for v in xy) for poly in polys['A_'+level] for xy in poly}
     b={(-round(x,5),round(y,5)) for poly in polys['B_'+level] for x,y in poly}
     assert a==b,level
-result={'reopened_blend':True,'mesh_object_count':sum(o.type=='MESH' for o in scene.objects),'open_internal_door_leaves':len(leaves),'mirror_walls_match':True,'asset_bounds_checks':asset_bounds,'packed_images':sum(bool(i.packed_file) for i in bpy.data.images),'missing_images':missing,'unit_object_counts':units,'cameras':checks,'wall_footprints':polys,'wall_materials':list({m.name for o in scene.objects if o.name.startswith('BLI_') for m in o.data.materials}),'original_salon_sha256':hashlib.sha256((ROOT/'tmp/existing/salon_v4_editable.blend').read_bytes()).hexdigest(),'sha256_blend':hashlib.sha256((OUT/'Wnetrza_4_lokale.blend').read_bytes()).hexdigest()}
+result={'reopened_blend':True,'living_entrance_checks':entry_checks,'mesh_object_count':sum(o.type=='MESH' for o in scene.objects),'open_internal_door_leaves':len(leaves),'mirror_walls_match':True,'asset_bounds_checks':asset_bounds,'packed_images':sum(bool(i.packed_file) for i in bpy.data.images),'missing_images':missing,'unit_object_counts':units,'cameras':checks,'wall_footprints':polys,'wall_materials':list({m.name for o in scene.objects if o.name.startswith('BLI_') for m in o.data.materials}),'original_salon_sha256':hashlib.sha256((ROOT/'tmp/existing/salon_v4_editable.blend').read_bytes()).hexdigest(),'sha256_blend':hashlib.sha256((OUT/'Wnetrza_4_lokale.blend').read_bytes()).hexdigest()}
 (OUT/'KONTROLA_PLIKU_BLEND.json').write_text(json.dumps(result,indent=2))
 geometry_file=OUT/'KONTROLA_GEOMETRII.json'
 if geometry_file.exists():
