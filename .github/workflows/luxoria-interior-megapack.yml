@@ -1,0 +1,70 @@
+name: LUXORIA - realistic interior CC0 mega ZIP with contact sheet
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/luxoria-interior-megapack.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build-real-asset-megapack:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare image montage and validate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install pillow
+          python -m py_compile tools/polyhaven_premium_interior_bundle.py
+          python tools/polyhaven_premium_interior_bundle.py --mode plan
+
+      - name: Download and assemble authentic CC0 models + PBR architectural surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/polyhaven_premium_interior_bundle.py --mode download
+
+      - name: Validate ZIP and contact sheet
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import zipfile
+          from pathlib import Path
+          from PIL import Image
+          arc=Path('tmp/luxoria-interior-megapack-CC0.zip')
+          assert arc.is_file() and arc.stat().st_size>120*1024*1024, 'Small/empty pack'
+          with zipfile.ZipFile(arc) as z:
+              assert z.testzip() is None
+              doc=json.loads(z.read('manifest.json'))
+              assert doc['license']=='CC0 1.0'
+              assert doc['models']>=55 and doc['pbr_materials']>=75
+              assert len([n for n in z.namelist() if n.endswith('.blend')])==doc['models']+doc['pbr_materials']
+              with z.open('ZOBACZ_ZAWARTOSC.jpg') as imgstream:
+                  import io
+                  img=Image.open(io.BytesIO(imgstream.read()))
+                  assert img.width>=1200 and img.height>=600
+              print('VALIDATED',doc['models'],'models',doc['pbr_materials'],'PBR materials',
+                  round(arc.stat().st_size/1048576,1),'MiB zipped')
+          PY
+
+      - name: Publish one big free archive and real thumbnail gallery
+        uses: actions/upload-artifact@v4
+        with:
+          name: LUXORIA-Interior-MegaPack-CC0
+          path: |
+            tmp/luxoria-interior-megapack-CC0.zip
+            tmp/luxoria-cc0-interior-megapack/ZOBACZ_ZAWARTOSC.jpg
+            tmp/luxoria-cc0-interior-megapack/manifest.json
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
