@@ -88,9 +88,31 @@ def append_blend_asset(slug, location, target_width, angle):
                 original=Path(bpy.path.abspath(img.filepath)).name
                 replacement=MODEL_ROOT/slug/"textures"/original
                 if not replacement.exists():
-                    # Embedded images do not need a filesystem match.
-                    if img.packed_file is not None:continue
-                    raise FileNotFoundError(f"Missing PBR texture {slug}/{original}")
+                    # Poly Haven's 1K bundle sometimes retains references to the
+                    # model author's original 8K filenames in the .blend.
+                    # Resolve by semantic map channel + material component.
+                    original_stem=original.lower().replace("roughness","rough")
+                    candidates=list((MODEL_ROOT/slug/"textures").glob("*"))
+                    kind=next((k for k in ("rough","diff","nor","metal","opacity","alpha","mask","spec")
+                               if k in original_stem),None)
+                    if kind=="opacity":kind="alpha"
+                    segment=next((k for k in ("base","wood","legs","pillow","pot","leaves","fabric","glass")
+                                  if k in original_stem),None)
+                    ranked=[]
+                    for image_path in candidates:
+                        stem=image_path.stem.lower()
+                        if kind is None or kind not in stem:continue
+                        score=(10 if segment and segment in stem else 0)
+                        score+=sum(1 for token in original_stem.split("_") if len(token)>3 and token in stem)
+                        ranked.append((score,image_path))
+                    if ranked:
+                        replacement=sorted(ranked,key=lambda a:(-a[0],a[1].name))[0][1]
+                        print(f"PBR remap ({slug}): {original} -> {replacement.name}",flush=True)
+                    elif img.packed_file is not None:
+                        continue
+                    else:
+                        # Never pretend the unknown source texture was preserved.
+                        raise FileNotFoundError(f"No equivalent 1K {kind} PBR texture for {slug}/{original}")
                 img.filepath=str(replacement)
                 img.reload()
     return {
