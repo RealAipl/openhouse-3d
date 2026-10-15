@@ -73,6 +73,10 @@ jobs:
           pic=base/"salon_A_pietro_polyhaven_CC0.png"
           blend=base/"blizniak_salon_A_polyhaven_CC0.blend"
           doc=json.loads((base/"model_import_report.json").read_text())
+          other=base/"salon_A_polyhaven_perspektywa.png"
+          assert other.is_file() and other.stat().st_size>30000
+          with Image.open(other) as image:
+              assert image.size==(1280,720)
           assert len(doc["models"])==9
           assert sum(m["meshes"] for m in doc["models"])>=9
           assert doc["license"]=="CC0 1.0"
@@ -91,7 +95,7 @@ jobs:
         with:
           name: real-polyhaven-furniture-living-room-blizniak
           path: |
-            houses/blizniak_dwulokalowy/output/polyhaven_test/salon_A_pietro_polyhaven_CC0.png
+            houses/blizniak_dwulokalowy/output/polyhaven_test/*.png
             houses/blizniak_dwulokalowy/output/polyhaven_test/blizniak_salon_A_polyhaven_CC0.blend
             houses/blizniak_dwulokalowy/output/polyhaven_test/model_import_report.json
           retention-days: 7
