@@ -1,11 +1,8 @@
 name: Salon V4 - single premium Cycles still
+# Expensive render is manual only. The existing 1080p deliverables were
+# already produced; changing workflow/docs must not launch another CPU render.
 on:
-  push:
-    branches: [salon-v4-premium-20261015]
-    paths:
-      - .github/workflows/salon-v4-render.yml
-      - tools/prepare_salon_v4.py
-      - houses/blizniak_dwulokalowy/stage_salon_v4.py
+  workflow_dispatch:
 permissions:
   contents: write
 concurrency:
@@ -68,12 +65,16 @@ jobs:
           set -euo pipefail
           OUT=houses/blizniak_dwulokalowy/output/salon_v4
           gh release upload salon-v4-premium-20261015 "$OUT/v4_audit.json" --clobber
-          gh release upload salon-v4-premium-20261015 "$OUT/salon_v4_1920x1080.png" "$OUT/salon_v4_preview.jpg" "$OUT/salon_v4_editable.blend" "$OUT/asset_report.json" "$OUT/prepared_assets.json" "$OUT/RAPORT.md" "$OUT/SHA256SUMS.txt"
+          gh release upload salon-v4-premium-20261015 "$OUT/salon_v4_1920x1080.png" "$OUT/salon_v4_preview.jpg" "$OUT/salon_v4_editable.blend" "$OUT/asset_report.json" "$OUT/prepared_assets.json" "$OUT/RAPORT.md" "$OUT/SHA256SUMS.txt" --clobber
           mkdir -p docs/assets/salon-v4
           cp "$OUT/salon_v4_preview.jpg" "$OUT/asset_report.json" "$OUT/RAPORT.md" docs/assets/salon-v4/
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/assets/salon-v4/
-          git commit -m "Record actual V4 salon render preview and asset receipt"
-          git push origin HEAD:salon-v4-premium-20261015
+          if ! git diff --cached --quiet; then
+            git commit -m "Record actual V4 salon render preview and asset receipt"
+            git push origin "HEAD:refs/heads/salon-v4-premium-20261015"
+          else
+            echo "Already committed, nothing to push"
+          fi
           gh release edit salon-v4-premium-20261015 --notes-file "$OUT/RAPORT.md"
