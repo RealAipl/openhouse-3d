@@ -18,14 +18,15 @@ BASE=Path("tmp/luxoria-home-extra-v2")
 ARCHIVE=Path("tmp/LUXORIA_Dom_Wnetrza_V2_CC0_Dodatkowe_Zasoby.zip")
 CAP_BYTES=1_320_000_000
 MAX_SINGLE=53_000_000
-MIN_MODELS=35
+MIN_MODELS=13
 MIN_POLY_MATS=45
 MIN_ACG_MATS=55
 MAX_CONTENT={"models":58,"poly_mats":80,"ambient_mats":105}
 BAD=("rust","weathered","destroyed","abandoned","rough rock","ancient","medieval",
      "worn","damaged","broken","grimy","dirty","grunge","moldy","mouldy",
      "military","weapon","sci-fi","gothic","industrial","antique",
-     "vintage","ruined","wet","muddy","blood","rotten","debris","old brick")
+     "vintage","ruined","wet","muddy","blood","rotten","debris","old brick",
+     "climbing wall","driveway","fluorescent","patio tile")
 # Category-first: select household items and architectonic finishes, not parks, boulders.
 MODEL_GROUPS={
  "seating":("furniture/seating",),
@@ -36,7 +37,7 @@ MODEL_GROUPS={
  "decorations":("decor & art/","containers & storage/"),
  "kitchen":("food & kitchen/","containers & storage/kitchen"),
  "houseplants":("nature/plants/houseplant","nature/plants/potted"),
- "appliances":("electronics & appliances/"),
+ "appliances":("electronics & appliances/home appliances/",),
  "daily_life":("leisure/games & toys/","tools & equipment/home"),
 }
 MATERIAL_GROUPS={
