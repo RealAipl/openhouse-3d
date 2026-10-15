@@ -132,6 +132,11 @@ def gallery():
 
 
 def film():
+    def check_duration(path, seconds):
+        probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','json',str(path)]))
+        if abs(float(probe['format']['duration'])-seconds)>.01:
+            raise RuntimeError(f'Incomplete film: {path}')
+
     temp=OUT/'film-encode';temp.mkdir(exist_ok=True)
     clips=[]
     for i,index in enumerate([0,1,2,4,5,6]):
@@ -144,11 +149,13 @@ def film():
         clip=temp/f'clip-{i}.mp4'
         fade_in="" if i==0 else "fade=t=in:st=0:d=0.35,"
         vf=f"[0:v]scale=2560:1440,zoompan=z='min(zoom+0.00030,1.036)':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=120:s=1920x1080:fps=24[bg];[bg][1:v]overlay=0:0,{fade_in}fade=t=out:st=4.65:d=0.35,format=yuv420p[v]"
-        subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-i',str(OUT/'Obrazy'/(stem+'.png')),'-i',str(overlay),'-filter_complex',vf,'-map','[v]','-frames:v','120','-an','-c:v','libx264','-preset','fast','-crf','19','-threads','4',str(clip)],check=True)
+        subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-i',str(OUT/'Obrazy'/(stem+'.png')),'-i',str(overlay),'-filter_complex',vf,'-map','[v]','-frames:v','120','-an','-c:v','libx264','-preset','fast','-crf','19','-threads','4','-movflags','+faststart',str(clip)],check=True)
+        check_duration(clip,5)
         clips.append(clip)
     concat=temp/'list.txt';concat.write_text(''.join(f"file '{p.resolve()}'\n" for p in clips))
     target=DELIVERY/'Film/Wnetrza_prezentacja_1080p.mp4';target.parent.mkdir(exist_ok=True)
-    subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-f','concat','-safe','0','-i',str(concat),'-c','copy','-movflags','+faststart',str(target)],check=True)
+    subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-xerror','-y','-f','concat','-safe','0','-i',str(concat),'-c','copy','-movflags','+faststart',str(target)],check=True)
+    check_duration(target,30)
 
 
 def archive():
