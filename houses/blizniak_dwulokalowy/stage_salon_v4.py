@@ -274,7 +274,7 @@ def main():
         import_asset("gather-dining-armchair-ee459660", (x, y, FLOOR), 0.68, angle, "DiningChair_" + str(i))
     lamp, lb = import_asset("paper-column-paper-column-floor-lamp-3b5a06e7", (-7.27, 3.10, FLOOR), 0.302)
     # Paper Column's 1.13m native height is preserved by its uniform scale.
-    import_asset("basket-woven-basket-pendant-baacdf33", (-2.94, 2.60, 4.73), 0.44, 0)
+    import_asset("basket-woven-basket-pendant-baacdf33", (-2.94, 2.60, 4.60), 0.44, 0)
     import_asset("brass_vase_01", (-1.86, 4.39, sidebounds[1][2] + 0.001), 0.18)
     # The complete tea set is placed on the dining surface, with no fake texture substitution.
     import_asset("tea_set_01", (-2.94, 2.63, dining_bounds[1][2] + 0.002), 0.63, 20)
@@ -325,7 +325,7 @@ def main():
     world.use_nodes = True
     nt = world.node_tree
     sky = nt.nodes.new("ShaderNodeTexSky")
-    sky.sky_type = "NISHITA"
+    sky.sky_type = "MULTIPLE_SCATTERING"
     sky.sun_elevation = math.radians(32)
     sky.sun_rotation = math.radians(210)
     sky.sun_disc = False
@@ -344,7 +344,7 @@ def main():
     for i, (x, y) in enumerate([(-6, 2.3), (-4.6, 3.6), (-1.25, 2.6), (-1.25, 4)]):
         box("DownlightTrim", (x, y, 5.575), (0.11, 0.11, 0.012), paint, 0.01)
         area("Downlight_" + str(i), (x, y, 5.56), (x, y, 2.96), 12, 0.10)
-    area("DiningPendant", (-2.94, 2.60, 4.77), (-2.94, 2.60, 3.7), 22, 0.25)
+    area("DiningPendant", (-2.94, 2.60, 4.61), (-2.94, 2.60, 3.7), 22, 0.25)
     d = bpy.data.lights.new("V4_PaperColumnGlow", "POINT")
     d.energy = 7
     d.color = (1, 0.73, 0.42)

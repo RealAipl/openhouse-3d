@@ -28,6 +28,8 @@ jobs:
           echo "ARCHVIZ_PYTHON=$(command -v python)" >> "$GITHUB_ENV"
       - name: Prepare audited V4 models and selected V1-V3 PBR
         run: python -u tools/prepare_salon_v4.py
+      - name: Cross-check actual V1-V3 archives for identical model files
+        run: python -u tools/crosscheck_salon_v4.py
       - name: Download official Blender
         run: |
           curl --fail --retry 3 -L --silent --show-error https://download.blender.org/release/Blender5.2/blender-5.2.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
@@ -65,6 +67,7 @@ jobs:
         run: |
           set -euo pipefail
           OUT=houses/blizniak_dwulokalowy/output/salon_v4
+          gh release upload salon-v4-premium-20261015 "$OUT/v4_audit.json" --clobber
           gh release upload salon-v4-premium-20261015 "$OUT/salon_v4_1920x1080.png" "$OUT/salon_v4_preview.jpg" "$OUT/salon_v4_editable.blend" "$OUT/asset_report.json" "$OUT/prepared_assets.json" "$OUT/RAPORT.md" "$OUT/SHA256SUMS.txt"
           mkdir -p docs/assets/salon-v4
           cp "$OUT/salon_v4_preview.jpg" "$OUT/asset_report.json" "$OUT/RAPORT.md" docs/assets/salon-v4/

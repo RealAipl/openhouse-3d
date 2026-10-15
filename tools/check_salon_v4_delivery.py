@@ -11,7 +11,7 @@ assert scene.camera.name == "V4_SalonCamera"
 assert scene.render.engine == "CYCLES"
 assert (scene.render.resolution_x, scene.render.resolution_y) == (1920, 1080)
 assert scene.cycles.samples == 192 and scene.cycles.use_denoising
-assert len(report["models"]) == 14
+assert len(report["models"]) == 13
 assert report["preserved_original_meshes"] >= 50
 assert not report["missing_images"]
 used_images = [im for im in bpy.data.images if im.source == "FILE" and im.users > 0]
