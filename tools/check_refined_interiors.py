@@ -10,7 +10,8 @@ bpy.ops.wm.open_mainfile(filepath=str(out/'Wnetrza_4_lokale.blend'));after=archi
 missing=[i.name for i in bpy.data.images if i.source=='FILE' and not i.packed_file and not Path(bpy.path.abspath(i.filepath)).is_file()];assert not missing
 unassigned=[o.name for o in bpy.data.objects if o.type=='MESH' and (not len(o.data.materials) or any(m is None for m in o.data.materials))];assert not unassigned
 assert len(plan.ROOMS)==24
-result={'architectural_meshes_unchanged':True,'architectural_mesh_count':len(before),'packed_images':sum(bool(i.packed_file) for i in bpy.data.images),'missing_images':missing,'unassigned_meshes':unassigned,'rooms':24,'units':['A_ground','A_upper','B_ground','B_upper'],'blend_sha256':hashlib.sha256((out/'Wnetrza_4_lokale.blend').read_bytes()).hexdigest(),'camera_count':sum(o.type=='CAMERA' for o in bpy.data.objects),'camera_route':None}
+counts={k:len(bpy.data.collections['Lokal_'+k].objects) for k in ['A_ground','A_upper','B_ground','B_upper']}
+result={'unit_object_counts':counts,'mesh_object_count':sum(o.type=='MESH' for o in bpy.data.objects),'architectural_meshes_unchanged':True,'architectural_mesh_count':len(before),'packed_images':sum(bool(i.packed_file) for i in bpy.data.images),'missing_images':missing,'unassigned_meshes':unassigned,'rooms':24,'units':['A_ground','A_upper','B_ground','B_upper'],'blend_sha256':hashlib.sha256((out/'Wnetrza_4_lokale.blend').read_bytes()).hexdigest(),'camera_count':sum(o.type=='CAMERA' for o in bpy.data.objects),'camera_route':None}
 poses_path=root/'tmp/repair/walk-frames/camera.json'
 if poses_path.exists():
  poses=json.loads(poses_path.read_text());s=bpy.context.scene;deps=bpy.context.evaluated_depsgraph_get();hits=[]

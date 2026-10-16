@@ -16,15 +16,15 @@ def main():
     check=json.loads((OUT/'KONTROLA_KOREKTY.json').read_text());assert check['camera_route']['positions']==120
     for name in ['Kontrola_rzutow.png','KONTROLA_GEOMETRII.json','ODCZYT_RYSUNKOW.json','ZRODLA_MODELI.json','ZRODLA_MATERIALOW.json']:
         shutil.copy2(OLD/'Dokumentacja'/name,OUT/name)
-    model=json.loads((OLD/'Dokumentacja/KONTROLA_PLIKU_BLEND.json').read_text());model.update({'sha256_blend':check['blend_sha256'],'packed_images':check['packed_images'],'missing_images':check['missing_images'],'camera_count':check['camera_count'],'animated_camera':'Spacer_3D_A2','refinement_check':'KONTROLA_KOREKTY.json'});(OUT/'KONTROLA_PLIKU_BLEND.json').write_text(json.dumps(model,indent=2))
+    model=json.loads((OLD/'Dokumentacja/KONTROLA_PLIKU_BLEND.json').read_text());model.update(check);model.update({'sha256_blend':check['blend_sha256'],'packed_images':check['packed_images'],'missing_images':check['missing_images'],'camera_count':check['camera_count'],'animated_camera':'Spacer_3D_A2','refinement_check':'KONTROLA_KOREKTY.json'});(OUT/'KONTROLA_PLIKU_BLEND.json').write_text(json.dumps(model,indent=2))
     commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     geo=json.loads((OUT/'KONTROLA_GEOMETRII.json').read_text());geo['delivery_source_commit']=commit;geo['camera_count']=check['camera_count'];(OUT/'KONTROLA_GEOMETRII.json').write_text(json.dumps(geo,indent=2))
-    records=[]
+    records={}
     for line in (ROOT.parent/'repair-final-renders.log').read_text().splitlines():
         if line.startswith('RENDER_OK '):
-            _,view,seconds=line.split();records.append({'view':view,'seconds':float(seconds),'resolution_percentage':100,'samples_requested':64})
+            _,view,seconds=line.split();records[view]={'view':view,'seconds':float(seconds),'resolution_percentage':100,'samples_requested':64}
     assert len(records)==9
-    (OUT/'Obrazy/render_times.json').write_text(json.dumps(records,indent=2))
+    (OUT/'Obrazy/render_times.json').write_text(json.dumps(list(records.values()),indent=2))
     text=(OLD/'README.md').read_text();a=text.index('## Pliki końcowe');text=text[:a]+'''## Korekta wykończenia
 
 We wszystkich czterech lokalach uzupełniono wykończenia i detale. Fronty górne mają kolor kaszmirowy, szafy i drzwi wewnętrzne ciepły szary, AGD satynowy grafit, blaty i okładziny szary kamień. Tkaniny mają spokojne odcienie taupe, piasku i kości słoniowej. Ściany pozostały jasne. Zlew ma prawdziwy otwór i zagłębioną stalową misę, armatura zakrzywiony profil, urządzenia sterowanie i uchwyty, a szuflady podziały. Uzupełniono klamki wejściowe, wykończenie drzwi oraz drobną fakturę kamienia w łazienkach. Nie dodawano nowych paczek assetów.

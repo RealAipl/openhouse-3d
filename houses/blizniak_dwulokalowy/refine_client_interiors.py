@@ -41,6 +41,12 @@ def finish(name,color,rough=.5,metal=0,scale=160,bump=.0003):
 
 def assign(ob,m):
     ob.data=ob.data.copy();ob.data.materials.clear();ob.data.materials.append(m)
+    if not ob.data.uv_layers and any(n.type=='TEX_IMAGE' for n in m.node_tree.nodes):
+        layer=ob.data.uv_layers.new(name='Metres')
+        for p in ob.data.polygons:
+            ax=max(range(3),key=lambda i:abs(p.normal[i]));a,b=[(1,2),(0,2),(0,1)][ax]
+            for li in p.loop_indices:
+                co=ob.data.vertices[ob.data.loops[li].vertex_index].co;layer.data[li].uv=(co[a],co[b])
 
 
 def remove_named(*names):

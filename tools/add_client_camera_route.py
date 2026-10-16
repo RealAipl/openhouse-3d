@@ -9,6 +9,13 @@ from mathutils import Quaternion
 root=Path.cwd();out=root/'houses/blizniak_dwulokalowy/output/refined'
 p=out/'Wnetrza_4_lokale.blend';poses=json.loads((root/'tmp/repair/walk-frames/camera.json').read_text());assert len(poses)==120
 bpy.ops.wm.open_mainfile(filepath=str(p))
+door=bpy.data.objects['BLI_External_Entry_Doors']
+if not door.data.uv_layers:
+    layer=door.data.uv_layers.new(name='Metres')
+    for polygon in door.data.polygons:
+        axis=max(range(3),key=lambda i:abs(polygon.normal[i]));a,b=[(1,2),(0,2),(0,1)][axis]
+        for li in polygon.loop_indices:
+            co=door.data.vertices[door.data.loops[li].vertex_index].co;layer.data[li].uv=(co[a],co[b])
 old=bpy.data.objects.get('Spacer_3D_A2')
 if old:bpy.data.objects.remove(old,do_unlink=True)
 data=bpy.data.cameras.new('Spacer_3D_A2');cam=bpy.data.objects.new(data.name,data);bpy.context.scene.collection.objects.link(cam)
