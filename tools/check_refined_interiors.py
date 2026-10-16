@@ -20,9 +20,9 @@ if poses_path.exists():
   for z in (.35,1.0,1.55):
    origin=Vector((p.x,p.y,2.93+z))
    for dx,dy in [(1,0),(-1,0),(0,1),(0,-1),(.7,.7),(.7,-.7),(-.7,.7),(-.7,-.7)]:
-    hit,loc,normal,index,obj,matrix=s.ray_cast(deps,origin,Vector((dx,dy,0)).normalized(),distance=.12)
+    hit,loc,normal,index,obj,matrix=s.ray_cast(deps,origin,Vector((dx,dy,0)).normalized(),distance=.18)
     if hit:hits.append({'frame':i,'object':obj.name,'height':z})
  assert not hits,hits[:8]
- result['camera_route']={'positions':len(poses),'swept_clearance_m':.12,'collision_hits':hits,'geometry_based':True}
+ result['camera_route']={'positions':len(poses),'swept_clearance_m':.18,'collision_hits':hits,'geometry_based':True}
 (out/'KONTROLA_KOREKTY.json').write_text(json.dumps(result,indent=2));print('REFINEMENT_CHECK',json.dumps(result),flush=True)
 import os;os._exit(0)
