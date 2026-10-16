@@ -18,6 +18,7 @@ OUT=ROOT/'houses/blizniak_dwulokalowy/output/final'
 DELIVERY=OUT/'Wnetrza_bliźniaka'
 FONT='/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
 BOLD='/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
+MOVIE_IS_WALKTHROUGH=False
 VIEWS=[
  ('01_pietro_salon','Salon na piętrze','Strefa wypoczynku · lokal A2'),
  ('02_pietro_kuchnia_jadalnia','Kuchnia i jadalnia na piętrze','Otwarta strefa dzienna · lokal A2'),
@@ -118,7 +119,9 @@ def album():
     y=lines('Na piętrze etykieta salonu 4,14 m jest sprzeczna z łańcuchem zewnętrznym 4,54 m oraz tabelą 33,32 m². Przyjęto 4,54 m. Wymaga to potwierdzenia autora projektu przed użyciem do prac wykonawczych.',y)
     y=lines('Brak przekroju: wysokość sufitu 2,69 m jest założeniem. Rysunki są rastrowe; niektóre pozycje otworów odczytano graficznie. Model nie zastępuje CAD ani dokumentacji wykonawczej. Widok za oknami jest neutralnym tłem.',y-8)
     y-=20;c.setFont('InteriorBold',13);c.setFillColor(HexColor('#25322d'));c.drawString(40,y,'W paczce');y-=23
-    lines('9 wizualizacji PNG i JPG w 1920 x 1080, plik Blender z teksturami, film prezentacyjny z wizualizacji, lokalna galeria, odczyt rysunków, kontrola modelu, źródła i licencje zasobów CC0. Film jest montażem obrazów, a nie interaktywnym spacerem.',y)
+    film_description=' Film pokazuje ruch kamery przez rzeczywisty model 3D.' if MOVIE_IS_WALKTHROUGH else ' Film jest montażem obrazów, a nie interaktywnym spacerem.'
+    movie_content='film z ruchem kamery w modelu 3D' if MOVIE_IS_WALKTHROUGH else 'film prezentacyjny z wizualizacji'
+    lines(('9 wizualizacji PNG i JPG w 1920 x 1080, plik Blender z teksturami, '+movie_content+', lokalna galeria, odczyt rysunków, kontrola modelu, źródła i licencje zasobów CC0. '+film_description),y)
     c.setFont('Interior',8);c.drawString(40,31,'Wyłącznie wnętrza. Bez zmian witryny LUXORIA i bez nowych wizualizacji zewnętrznych.');c.drawRightString(W-32,31,'11 / 11')
     c.save()
 

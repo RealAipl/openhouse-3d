@@ -35,3 +35,11 @@ python tools/check_client_interiors.py
 ```
 
 Wyniki: `houses/blizniak_dwulokalowy/output/final/`. Oryginalny wcześniejszy salon i opublikowane wydania pozostają zachowane. Nie wykonywano zewnętrznych wizualizacji ani zmian strony LUXORIA. Meble, materiały i lampy są propozycją aranżacyjną, nie deklaracją standardu sprzedaży ani projektem wykonawczym.
+
+## Korekta wykończeń i rzeczywisty spacer
+
+`refine_client_interiors.py` pracuje na istniejącym spakowanym modelu (`tmp/repair/original.blend`). Zachowuje siatki architektoniczne, poprawia materiały i detale we wszystkich lokalach: kamień, tkaniny, kaszmirową stolarkę, AGD, zlew, armaturę i klamki. Nie tworzy nowej biblioteki assetów. Zapisuje wynik w `output/refined`.
+
+`walkthrough/` zawiera samodzielny widok 3D z trasą kamery i wyborem czterech lokali. `tools/export_client_walkthrough.py` eksportuje istniejącą scenę, a `tools/optimize_client_glb.py` ogranicza wyłącznie tekstury pochodnej wersji interaktywnej. Edytowalny Blender zachowuje pełne tekstury. `tools/add_client_camera_route.py` zapisuje rzeczywiście zarejestrowane pozycje kamery jako animację w `.blend`; `tools/check_refined_interiors.py` porównuje architekturę i sprawdza prześwit trasy. `tools/package_refined_interiors.py` składa poprawione obrazy, PDF i rzeczywisty spacer, bez generowania starego montażu zdjęć.
+
+Spacer używa renderowania czasu rzeczywistego z prostszym światłem. Nie deklarujemy jakości fotorealistycznej. Parametry źródłowe i interpolacja są opisane w dostarczanym README.
