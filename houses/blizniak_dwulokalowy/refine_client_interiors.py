@@ -177,6 +177,26 @@ def clear_sink_carcasses():
     bpy.context.view_layer.update()
 
 
+def close_l_counter_corner():
+    """The cross run reaches the party wall, closing the full L-shaped corner."""
+    if bpy.context.scene.get('complete_l_counter_v3'):
+        return
+    for seg in ('A','B'):
+        for level,z in [('ground',0),('upper',2.93)]:
+            c.SEG=seg;c.LEVEL=level;c.Z=z
+            c.ROOM=seg+'_'+level+('_6' if level=='ground' else '_5')
+            top=bpy.data.objects[c.ROOM+'_Continuous stone worktop']
+            # Preserve the sink hole and all left-side vertices; extend only
+            # the outer end from local u=6.92 to u=7.325.
+            for vertex in top.data.vertices:
+                if vertex.co.x>1.3:
+                    vertex.co.x+=.405
+            c.box('Closed L corner cabinet',(7.0,4.57,.46),(.62,.62,.80),
+                  bpy.data.materials['WNETRZA_Walnut PBR CC0 V2'],.006)
+    bpy.context.scene['complete_l_counter_v3']=True
+    bpy.context.view_layer.update()
+
+
 def build():
     OUT.mkdir(parents=True,exist_ok=True);bpy.ops.wm.open_mainfile(filepath=str(BASE));c.COLLECTIONS.clear()
     walls={o.name:hashlib.sha256(repr([(tuple(v.co)) for v in o.data.vertices]).encode()).hexdigest() for o in bpy.data.objects if o.type=='MESH' and o.name.startswith('BLI_')}
@@ -213,6 +233,7 @@ def build():
             kitchen_details()
             c.ROOM=seg+'_'+level+'_1';entrance_details()
     clear_sink_carcasses()
+    close_l_counter_corner()
     for name,digest in walls.items():
         ob=bpy.data.objects[name];assert hashlib.sha256(repr([tuple(v.co) for v in ob.data.vertices]).encode()).hexdigest()==digest,name
     s=bpy.context.scene;s.world.node_tree.nodes['Background'].inputs['Strength'].default_value=.38
@@ -220,7 +241,7 @@ def build():
     s.render.engine='CYCLES';s.cycles.samples=64;s.cycles.adaptive_threshold=.025;s.cycles.use_denoising=True
     s.render.threads_mode='FIXED';s.render.threads=8
     bpy.ops.file.pack_all();bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'Wnetrza_4_lokale.blend'),compress=True)
-    report={'architectural_geometry_unchanged':True,'source_blend_sha256':hashlib.sha256(BASE.read_bytes()).hexdigest(),'packed_images':sum(bool(i.packed_file) for i in bpy.data.images),'unassigned_meshes':[o.name for o in bpy.data.objects if o.type=='MESH' and not len(o.data.materials)],'material_count':len(bpy.data.materials),'changes':['Warm grey quartz and restrained cashmere/greige joinery','Textured and toned upholstery and bedding','Real cut sink opening with a recessed metal bowl and curved tap','Appliance controls, drawer reveals, sockets and handles','Dining stoneware and controlled textile finishes','Architectural shell preserved in all four units','Cabinet carcass cavity beneath every sink bowl','Removed coplanar overlap at L-shaped worktop corner']}
+    report={'architectural_geometry_unchanged':True,'source_blend_sha256':hashlib.sha256(BASE.read_bytes()).hexdigest(),'packed_images':sum(bool(i.packed_file) for i in bpy.data.images),'unassigned_meshes':[o.name for o in bpy.data.objects if o.type=='MESH' and not len(o.data.materials)],'material_count':len(bpy.data.materials),'changes':['Warm grey quartz and restrained cashmere/greige joinery','Textured and toned upholstery and bedding','Real cut sink opening with a recessed metal bowl and curved tap','Appliance controls, drawer reveals, sockets and handles','Dining stoneware and controlled textile finishes','Architectural shell preserved in all four units','Cabinet carcass cavity beneath every sink bowl','Removed coplanar overlap at L-shaped worktop corner','Closed full L-shaped countertop and corner cabinet']}
     (OUT/'KOREKTA_WYKONCZEN.json').write_text(json.dumps(report,indent=2));print('FINISH_OK',report,flush=True)
 
 

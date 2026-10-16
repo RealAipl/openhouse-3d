@@ -23,7 +23,13 @@ for segment in ('A','B'):
   party=bpy.data.objects[prefix+'_Party worktop']
   ymax=max((party.matrix_world@Vector(v)).y for v in party.bound_box)
   assert abs(ymax-4.21)<.001
-  sink_checks.append({'unit':segment+'_'+level,'first_surface_in_basin':obj.name,'basin_bottom_z':float(location.z-z),'l_top_overlap_removed':True})
+  for u in (7.0,7.15,7.25):
+   for y in (4.30,4.55,4.80):
+    xx=-7.545+u if segment=='A' else 7.545-u
+    found,top_location,_,_,top_object,_=bpy.context.scene.ray_cast(deps,Vector((xx,y,z+1.4)),Vector((0,0,-1)),distance=.7)
+    assert found and 'Continuous stone worktop' in top_object.name,(segment,level,u,y,top_object.name if top_object else None)
+    assert abs(float(top_location.z-z)-.91)<.005
+  sink_checks.append({'unit':segment+'_'+level,'first_surface_in_basin':obj.name,'basin_bottom_z':float(location.z-z),'l_top_overlap_removed':True,'corner_surface_grid_passed':True})
 result={'unit_object_counts':counts,'mesh_object_count':sum(o.type=='MESH' for o in bpy.data.objects),'architectural_meshes_unchanged':True,'architectural_mesh_count':len(before),'packed_images':sum(bool(i.packed_file) for i in bpy.data.images),'missing_images':missing,'unassigned_meshes':unassigned,'rooms':24,'units':['A_ground','A_upper','B_ground','B_upper'],'blend_sha256':hashlib.sha256((out/'Wnetrza_4_lokale.blend').read_bytes()).hexdigest(),'camera_count':sum(o.type=='CAMERA' for o in bpy.data.objects),'camera_route':None}
 result['sink_clearance_checks']=sink_checks
 poses_path=root/'tmp/repair/walk-frames/camera.json'
