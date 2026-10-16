@@ -15,8 +15,14 @@ result={'unit_object_counts':counts,'mesh_object_count':sum(o.type=='MESH' for o
 poses_path=root/'tmp/repair/walk-frames/camera.json'
 if poses_path.exists():
  poses=json.loads(poses_path.read_text());s=bpy.context.scene;deps=bpy.context.evaluated_depsgraph_get();hits=[]
+ assert len(poses)==480
+ assert len({tuple(p['position']) for p in poses})==len(poses)
+ assert s.frame_end==len(poses) and s.render.fps==24
+ camera=bpy.data.objects['Spacer_3D_A2']
+ assert camera.animation_data and camera.animation_data.action
  for i,pose in enumerate(poses):
   a=pose['position'];p=Vector((a[0],-a[2],a[1]));assert abs(p.z-(2.93+1.55))<.01
+  s.frame_set(i+1);assert (camera.location-p).length<1e-5
   for z in (.35,1.0,1.55):
    origin=Vector((p.x,p.y,2.93+z))
    for dx,dy in [(1,0),(-1,0),(0,1),(0,-1),(.7,.7),(.7,-.7),(-.7,.7),(-.7,-.7)]:
