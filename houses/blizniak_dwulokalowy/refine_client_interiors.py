@@ -145,6 +145,38 @@ def kitchen_details():
     bowl('Low dining vessel',(u,y),[(.07,.07,.76),(.10,.10,.825),(.105,.105,.826),(.083,.083,.785)],c.M['ceramic'])
 
 
+def clear_sink_carcasses():
+    """Keep solid cabinet tops out of the basin and remove coplanar L-top overlap."""
+    if bpy.context.scene.get('sink_carcass_clearance_v2'):
+        return
+    for seg in ('A','B'):
+        for level,z in [('ground',0),('upper',2.93)]:
+            c.SEG=seg;c.LEVEL=level;c.Z=z
+            c.ROOM=seg+'_'+level+('_6' if level=='ground' else '_5')
+            # Each run ends at the front edge of the perpendicular slab. The old
+            # slabs overlapped at exactly the same z, producing a black artifact.
+            party=bpy.data.objects[c.ROOM+'_Party worktop']
+            depth=4.21-2.685
+            for vertex in party.data.vertices:
+                vertex.co.y*=depth/1.83
+            party.location.y=(4.21+2.685)/2
+            # Cabinet carcasses were solid cubes; make room for the steel bowl.
+            cutter=c.box('temporary basin cabinet clearance',(5.95,4.54,.86),(.56,.46,.38),
+                         bpy.data.materials['WNETRZA_Charcoal metal'],0)
+            for cabinet in list(bpy.data.objects):
+                if not cabinet.name.startswith(c.ROOM+'_Oak lower cabinet'):
+                    continue
+                bpy.context.view_layer.objects.active=cabinet
+                modifier=cabinet.modifiers.new('Sink cabinet internal cavity','BOOLEAN')
+                modifier.operation='DIFFERENCE';modifier.solver='EXACT';modifier.object=cutter
+                while cabinet.modifiers[0]!=modifier:
+                    bpy.ops.object.modifier_move_up(modifier=modifier.name)
+                bpy.ops.object.modifier_apply(modifier=modifier.name)
+            bpy.data.objects.remove(cutter,do_unlink=True)
+    bpy.context.scene['sink_carcass_clearance_v2']=True
+    bpy.context.view_layer.update()
+
+
 def build():
     OUT.mkdir(parents=True,exist_ok=True);bpy.ops.wm.open_mainfile(filepath=str(BASE));c.COLLECTIONS.clear()
     walls={o.name:hashlib.sha256(repr([(tuple(v.co)) for v in o.data.vertices]).encode()).hexdigest() for o in bpy.data.objects if o.type=='MESH' and o.name.startswith('BLI_')}
@@ -180,6 +212,7 @@ def build():
             c.SEG=seg;c.LEVEL=level;c.Z=z;c.ROOM=seg+'_'+level+('_6' if level=='ground' else '_5')
             kitchen_details()
             c.ROOM=seg+'_'+level+'_1';entrance_details()
+    clear_sink_carcasses()
     for name,digest in walls.items():
         ob=bpy.data.objects[name];assert hashlib.sha256(repr([tuple(v.co) for v in ob.data.vertices]).encode()).hexdigest()==digest,name
     s=bpy.context.scene;s.world.node_tree.nodes['Background'].inputs['Strength'].default_value=.38
@@ -187,7 +220,7 @@ def build():
     s.render.engine='CYCLES';s.cycles.samples=64;s.cycles.adaptive_threshold=.025;s.cycles.use_denoising=True
     s.render.threads_mode='FIXED';s.render.threads=8
     bpy.ops.file.pack_all();bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'Wnetrza_4_lokale.blend'),compress=True)
-    report={'architectural_geometry_unchanged':True,'source_blend_sha256':hashlib.sha256(BASE.read_bytes()).hexdigest(),'packed_images':sum(bool(i.packed_file) for i in bpy.data.images),'unassigned_meshes':[o.name for o in bpy.data.objects if o.type=='MESH' and not len(o.data.materials)],'material_count':len(bpy.data.materials),'changes':['Warm grey quartz and restrained cashmere/greige joinery','Textured and toned upholstery and bedding','Real cut sink opening with a recessed metal bowl and curved tap','Appliance controls, drawer reveals, sockets and handles','Dining stoneware and controlled textile finishes','Architectural shell preserved in all four units']}
+    report={'architectural_geometry_unchanged':True,'source_blend_sha256':hashlib.sha256(BASE.read_bytes()).hexdigest(),'packed_images':sum(bool(i.packed_file) for i in bpy.data.images),'unassigned_meshes':[o.name for o in bpy.data.objects if o.type=='MESH' and not len(o.data.materials)],'material_count':len(bpy.data.materials),'changes':['Warm grey quartz and restrained cashmere/greige joinery','Textured and toned upholstery and bedding','Real cut sink opening with a recessed metal bowl and curved tap','Appliance controls, drawer reveals, sockets and handles','Dining stoneware and controlled textile finishes','Architectural shell preserved in all four units','Cabinet carcass cavity beneath every sink bowl','Removed coplanar overlap at L-shaped worktop corner']}
     (OUT/'KOREKTA_WYKONCZEN.json').write_text(json.dumps(report,indent=2));print('FINISH_OK',report,flush=True)
 
 

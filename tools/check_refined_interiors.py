@@ -11,7 +11,21 @@ missing=[i.name for i in bpy.data.images if i.source=='FILE' and not i.packed_fi
 unassigned=[o.name for o in bpy.data.objects if o.type=='MESH' and (not len(o.data.materials) or any(m is None for m in o.data.materials))];assert not unassigned
 assert len(plan.ROOMS)==24
 counts={k:len(bpy.data.collections['Lokal_'+k].objects) for k in ['A_ground','A_upper','B_ground','B_upper']}
+sink_checks=[]
+deps=bpy.context.evaluated_depsgraph_get()
+for segment in ('A','B'):
+ for level,z in [('ground',0),('upper',2.93)]:
+  x=-7.545+5.95 if segment=='A' else 7.545-5.95
+  hit,location,normal,index,obj,matrix=bpy.context.scene.ray_cast(deps,Vector((x,4.54,z+1.10)),Vector((0,0,-1)),distance=.5)
+  assert hit and ('Sink waste' in obj.name or 'Recessed brushed steel sink' in obj.name),(segment,level,obj.name if obj else None)
+  assert z+.70<float(location.z)<z+.80
+  prefix=segment+'_'+level+('_6' if level=='ground' else '_5')
+  party=bpy.data.objects[prefix+'_Party worktop']
+  ymax=max((party.matrix_world@Vector(v)).y for v in party.bound_box)
+  assert abs(ymax-4.21)<.001
+  sink_checks.append({'unit':segment+'_'+level,'first_surface_in_basin':obj.name,'basin_bottom_z':float(location.z-z),'l_top_overlap_removed':True})
 result={'unit_object_counts':counts,'mesh_object_count':sum(o.type=='MESH' for o in bpy.data.objects),'architectural_meshes_unchanged':True,'architectural_mesh_count':len(before),'packed_images':sum(bool(i.packed_file) for i in bpy.data.images),'missing_images':missing,'unassigned_meshes':unassigned,'rooms':24,'units':['A_ground','A_upper','B_ground','B_upper'],'blend_sha256':hashlib.sha256((out/'Wnetrza_4_lokale.blend').read_bytes()).hexdigest(),'camera_count':sum(o.type=='CAMERA' for o in bpy.data.objects),'camera_route':None}
+result['sink_clearance_checks']=sink_checks
 poses_path=root/'tmp/repair/walk-frames/camera.json'
 if poses_path.exists():
  poses=json.loads(poses_path.read_text());s=bpy.context.scene;deps=bpy.context.evaluated_depsgraph_get();hits=[]

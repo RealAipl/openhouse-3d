@@ -29,7 +29,7 @@ def main():
     text=text.replace('Strony 1 i 2 zawierają odpowiednio A-01 (rzut parteru) i A-02 (rzut piętra), kolejne strony elewacje pomocnicze.', 'Strony 1 i 2 najnowszego projektu KORMET zawierają odpowiednio rzut parteru i piętra, kolejne strony elewacje pomocnicze. Nie są to identyczne arkusze ze starszymi plikami A-01 i A-02 z 2021 r.')
     text+='''## Korekta wykończenia
 
-We wszystkich czterech lokalach uzupełniono wykończenia i detale. Fronty górne mają kolor kaszmirowy, szafy i drzwi wewnętrzne ciepły szary, AGD satynowy grafit, blaty i okładziny szary kamień. Tkaniny mają spokojne odcienie taupe, piasku i kości słoniowej. Ściany pozostały jasne. Zlew ma prawdziwy otwór i zagłębioną stalową misę, armatura zakrzywiony profil, urządzenia sterowanie i uchwyty, a szuflady podziały. Uzupełniono klamki wejściowe, wykończenie drzwi oraz drobną fakturę kamienia w łazienkach. Nie dodawano nowych paczek assetów.
+We wszystkich czterech lokalach uzupełniono wykończenia i detale. Fronty górne mają kolor kaszmirowy, szafy i drzwi wewnętrzne ciepły szary, AGD satynowy grafit, blaty i okładziny szary kamień. Tkaniny mają spokojne odcienie taupe, piasku i kości słoniowej. Ściany pozostały jasne. Zlew ma prawdziwy otwór i zagłębioną stalową misę, armatura zakrzywiony profil, urządzenia sterowanie i uchwyty, a szuflady podziały. Wycięto też wolną przestrzeń pod misami wewnątrz korpusów szafek i usunięto nakładanie się blatów w narożniku L. Uzupełniono klamki wejściowe, wykończenie drzwi oraz drobną fakturę kamienia w łazienkach. Nie dodawano nowych paczek assetów.
 
 Ściany i otwory nie zostały zmienione: porównano wierzchołki i ściany 10 siatek architektonicznych z poprzednim modelem dopasowanym do aktualnych rzutów KORMET. Są identyczne. Aktualne kontrole są w Dokumentacja/KONTROLA_KOREKTY.json.
 
@@ -56,7 +56,7 @@ Jakość: spokojne wizualizacje aranżacyjne z czytelnymi materiałami. Detale p
     gallery=DEL/'Galeria.html';gallery.write_text(gallery.read_text().replace('<a href="README.md">','<a href="Spacer_3D.html">Spacer 3D</a><a href="README.md">'))
     for name in ['refine_client_interiors.py']:
         shutil.copy2(ROOT/'houses/blizniak_dwulokalowy'/name,DEL/'Zrodla/house'/name)
-    for name in ['check_refined_interiors.py','add_client_camera_route.py','export_client_walkthrough.py','optimize_client_glb.py','package_refined_interiors.py','render_client_walkthrough.py','capture_client_walkthrough.cjs','check_client_viewer.cjs']:
+    for name in ['check_refined_interiors.py','add_client_camera_route.py','export_client_walkthrough.py','optimize_client_glb.py','package_refined_interiors.py','render_client_walkthrough.py','encode_client_walkthrough.py','capture_client_walkthrough.cjs','check_client_viewer.cjs']:
         shutil.copy2(ROOT/'tools'/name,DEL/'Zrodla/tools'/name)
     shutil.copytree(ROOT/'houses/blizniak_dwulokalowy/walkthrough',DEL/'Zrodla/walkthrough',dirs_exist_ok=True)
     shutil.copy2(web/'node_modules/three/LICENSE',DEL/'Zrodla/LICENSE_THREE.txt')
@@ -66,6 +66,7 @@ Jakość: spokojne wizualizacje aranżacyjne z czytelnymi materiałami. Detale p
     shutil.copy2(OUT/'Film_klatki/settings.json',DEL/'Dokumentacja/USTAWIENIA_FILMU.json')
     shutil.copy2(OUT/'KONTROLA_FILMU.json',DEL/'Dokumentacja/KONTROLA_FILMU.json')
     shutil.copy2(OUT/'KONTROLA_SPACERU_HTML.json',DEL/'Dokumentacja/KONTROLA_SPACERU_HTML.json')
+    shutil.copy2(OUT/'KONTROLA_RUCHU_KAMERY.json',DEL/'Dokumentacja/KONTROLA_RUCHU_KAMERY.json')
     report='''# Ocena korekty wnętrz
 
 Wykonano korektę wykończeń czterech lokali. Dokładna lista zmian i ograniczeń jest w README. Poprzedni film zastąpiono rzeczywistym ruchem kamery w modelu. Dołączono także samodzielny spacer interaktywny po wszystkich lokalach.
